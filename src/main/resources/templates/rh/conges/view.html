@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${conge.employeNom + ' - Congé'}">Détails Congé</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .info-section {
+                margin-bottom: 1.5rem;
+            }
+            
+            .info-label {
+                font-weight: 600;
+                color: var(--secondary);
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                margin-bottom: 0.25rem;
+            }
+            
+            .info-value {
+                font-size: 1rem;
+                color: var(--dark);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh/conges}">
+                        <i class="bi bi-calendar-check"></i> Congés
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Détails
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <!-- Header avec actions -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="bi bi-calendar-check text-primary"></i> Détails du Congé
+                </h1>
+                <p class="text-muted mb-0" th:text="${conge.employeNom != null ? 'Congé de ' + conge.employeNom : 'Détails'}">Détails</p>
+            </div>
+            <div>
+                <a th:href="@{/rh/conges/{uuid}/edit(uuid=${conge.uuid})}" 
+                   class="btn btn-warning me-2"
+                   th:if="${conge.peutEtreModifie()}">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                <button class="btn btn-success me-2" 
+                        th:if="${conge.necessiteValidation()}"
+                        onclick="approveConge()">
+                    <i class="bi bi-check-circle"></i> Approuver
+                </button>
+                <button class="btn btn-danger me-2" 
+                        th:if="${conge.necessiteValidation()}"
+                        onclick="rejectConge()">
+                    <i class="bi bi-x-circle"></i> Rejeter
+                </button>
+                <button class="btn btn-outline-danger me-2" 
+                        onclick="confirmDelete()">
+                    <i class="bi bi-trash"></i> Supprimer
+                </button>
+                <a th:href="@{/rh/conges}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Colonne principale -->
+            <div class="col-lg-8">
+                <!-- Informations générales -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 info-section">
+                                <div class="info-label">Employé</div>
+                                <div class="info-value">
+                                    <a th:href="@{/rh/employes/{uuid}(uuid=${employeUuid})}" 
+                                       th:text="${conge.employeNom != null ? conge.employeNom : 'N/A'}"
+                                       class="text-decoration-none">N/A</a>
+                                    <br>
+                                    <small class="text-muted" th:text="${conge.employeMatricule != null ? 'Matricule: ' + conge.employeMatricule : ''}">MAT001</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 info-section">
+                                <div class="info-label">Type de congé</div>
+                                <div class="info-value">
+                                    <span class="badge bg-info fs-6" th:text="${conge.typeConge}">ANNUEL</span>
+                                    <span th:if="${conge.sousTypeConge != null}" 
+                                          class="badge bg-secondary ms-2" 
+                                          th:text="${conge.sousTypeConge}">Sous-type</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 info-section">
+                                <div class="info-label">Date de début</div>
+                                <div class="info-value" th:text="${conge.dateDebut != null ? #temporals.format(conge.dateDebut, 'dd/MM/yyyy') : '-'}">-</div>
+                            </div>
+                            
+                            <div class="col-md-6 info-section">
+                                <div class="info-label">Date de fin</div>
+                                <div class="info-value" th:text="${conge.dateFin != null ? #temporals.format(conge.dateFin, 'dd/MM/yyyy') : '-'}">-</div>
+                            </div>
+                            
+                            <div class="col-md-6 info-section">
+                                <div class="info-label">Nombre de jours</div>
+                                <div class="info-value">
+                                    <strong th:text="${conge.nombreJours != null ? conge.nombreJours + ' jours' : '-'}">15 jours</strong>
+                                    <small class="text-muted ms-2" th:if="${conge.nombreJoursOuvres != null}" 
+                                           th:text="'(' + conge.nombreJoursOuvres + ' jours ouvrés)'">(12 jours ouvrés)</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 info-section">
+                                <div class="info-label">Nature du congé</div>
+                                <div class="info-value">
+                                    <span class="badge" 
+                                          th:classappend="${conge.natureConge == 'PAYE' ? 'bg-success' : (conge.natureConge == 'NON_PAYE' ? 'bg-warning' : 'bg-info')}"
+                                          th:text="${conge.natureConge != null ? conge.natureConge : '-'}">PAYE</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 info-section" th:if="${conge.motif != null}">
+                                <div class="info-label">Motif</div>
+                                <div class="info-value" th:text="${conge.motif}">Motif</div>
+                            </div>
+                            
+                            <div class="col-12 info-section" th:if="${conge.justification != null}">
+                                <div class="info-label">Justification</div>
+                                <div class="info-value" th:text="${conge.justification}">Justification</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Workflow et approbation -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Workflow d'Approbation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 info-section">
+                                <div class="info-label">Statut</div>
+                                <div class="info-value">
+                                    <span class="badge bg-warning badge-statut" 
+                                          th:if="${conge.statutConge == 'EN_ATTENTE'}">
+                                        En attente
+                                    </span>
+                                    <span class="badge bg-info badge-statut" 
+                                          th:if="${conge.statutConge == 'EN_VALIDATION'}">
+                                        En validation
+                                    </span>
+                                    <span class="badge bg-success badge-statut" 
+                                          th:if="${conge.statutConge == 'APPROUVE'}">
+                                        Approuvé
+                                    </span>
+                                    <span class="badge bg-danger badge-statut" 
+                                          th:if="${conge.statutConge == 'REJETE'}">
+                                        Rejeté
+                                    </span>
+                                    <span class="badge bg-primary badge-statut" 
+                                          th:if="${conge.statutConge == 'EN_COURS'}">
+                                        En cours
+                                    </span>
+                                    <span class="badge bg-secondary badge-statut" 
+                                          th:if="${conge.statutConge == 'TERMINE'}">
+                                        Terminé
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 info-section" th:if="${conge.etapeWorkflow != null}">
+                                <div class="info-label">Étape workflow</div>
+                                <div class="info-value" th:text="${conge.etapeWorkflow}">VALIDATION_MANAGER</div>
+                            </div>
+                            
+                            <!-- Validation Manager -->
+                            <div class="col-md-6 info-section" th:if="${conge.valideParManager != null}">
+                                <div class="info-label">Validé par Manager</div>
+                                <div class="info-value">
+                                    <span th:text="${conge.valideParManagerNom != null ? conge.valideParManagerNom : 'N/A'}">N/A</span>
+                                    <br>
+                                    <small class="text-muted" th:if="${conge.dateValidationManager != null}" 
+                                           th:text="${#temporals.format(conge.dateValidationManager, 'dd/MM/yyyy')}">01/01/2024</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Validation RH -->
+                            <div class="col-md-6 info-section" th:if="${conge.valideParRh != null}">
+                                <div class="info-label">Validé par RH</div>
+                                <div class="info-value">
+                                    <span th:text="${conge.valideParRhNom != null ? conge.valideParRhNom : 'N/A'}">N/A</span>
+                                    <br>
+                                    <small class="text-muted" th:if="${conge.dateValidationRh != null}" 
+                                           th:text="${#temporals.format(conge.dateValidationRh, 'dd/MM/yyyy')}">01/01/2024</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Approbation finale -->
+                            <div class="col-md-6 info-section" th:if="${conge.approuvePar != null}">
+                                <div class="info-label">Approuvé par</div>
+                                <div class="info-value">
+                                    <span th:text="${conge.approuveParNom != null ? conge.approuveParNom : 'N/A'}">N/A</span>
+                                    <br>
+                                    <small class="text-muted" th:if="${conge.dateApprobation != null}" 
+                                           th:text="${#temporals.format(conge.dateApprobation, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:30</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Rejet -->
+                            <div class="col-md-6 info-section" th:if="${conge.rejete != null and conge.rejete}">
+                                <div class="info-label">Rejeté par</div>
+                                <div class="info-value">
+                                    <span th:text="${conge.rejeteParNom != null ? conge.rejeteParNom : 'N/A'}">N/A</span>
+                                    <br>
+                                    <small class="text-muted" th:if="${conge.dateRejet != null}" 
+                                           th:text="${#temporals.format(conge.dateRejet, 'dd/MM/yyyy')}">01/01/2024</small>
+                                    <br>
+                                    <small class="text-danger" th:if="${conge.motifRejet != null}" 
+                                           th:text="'Motif: ' + conge.motifRejet">Motif</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 info-section" th:if="${conge.commentairesValidateur != null}">
+                                <div class="info-label">Commentaires validateur</div>
+                                <div class="info-value" th:text="${conge.commentairesValidateur}">Commentaires</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Solde -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-calculator"></i> Solde de Congés</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 info-section">
+                                <div class="info-label">Solde avant</div>
+                                <div class="info-value" th:text="${conge.soldeAvant != null ? conge.soldeAvant + ' jours' : '-'}">-</div>
+                            </div>
+                            <div class="col-md-3 info-section">
+                                <div class="info-label">Solde après</div>
+                                <div class="info-value" th:text="${conge.soldeApres != null ? conge.soldeApres + ' jours' : '-'}">-</div>
+                            </div>
+                            <div class="col-md-3 info-section">
+                                <div class="info-label">Solde initial</div>
+                                <div class="info-value" th:text="${conge.soldeInitial != null ? conge.soldeInitial + ' jours' : '-'}">-</div>
+                            </div>
+                            <div class="col-md-3 info-section">
+                                <div class="info-label">Solde restant</div>
+                                <div class="info-value" th:text="${conge.soldeRestant != null ? conge.soldeRestant + ' jours' : '-'}">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Impact opérationnel -->
+                <div class="card shadow-sm mb-4" th:if="${conge.impactService != null or conge.remplacementNecessaire != null}">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Impact Opérationnel</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 info-section" th:if="${conge.impactService != null}">
+                                <div class="info-label">Impact sur le service</div>
+                                <div class="info-value" th:text="${conge.impactService}">Impact</div>
+                            </div>
+                            
+                            <div class="col-md-6 info-section" th:if="${conge.remplacementNecessaire != null}">
+                                <div class="info-label">Remplacement nécessaire</div>
+                                <div class="info-value">
+                                    <span class="badge" 
+                                          th:classappend="${conge.remplacementNecessaire ? 'bg-warning' : 'bg-success'}"
+                                          th:text="${conge.remplacementNecessaire ? 'Oui' : 'Non'}">Non</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 info-section" th:if="${conge.remplacePar != null}">
+                                <div class="info-label">Remplacé par</div>
+                                <div class="info-value" th:text="${conge.remplaceParNom != null ? conge.remplaceParNom : 'N/A'}">N/A</div>
+                            </div>
+                            
+                            <div class="col-12 info-section" th:if="${conge.mesuresCompensation != null}">
+                                <div class="info-label">Mesures de compensation</div>
+                                <div class="info-value" th:text="${conge.mesuresCompensation}">Mesures</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Colonne latérale -->
+            <div class="col-lg-4">
+                <!-- Statut et informations -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="info-label">Statut</div>
+                            <span class="badge bg-warning badge-statut" 
+                                  th:if="${conge.statutConge == 'EN_ATTENTE'}">
+                                En attente
+                            </span>
+                            <span class="badge bg-success badge-statut" 
+                                  th:if="${conge.statutConge == 'APPROUVE'}">
+                                Approuvé
+                            </span>
+                            <span class="badge bg-danger badge-statut" 
+                                  th:if="${conge.statutConge == 'REJETE'}">
+                                Rejeté
+                            </span>
+                            <span class="badge bg-primary badge-statut" 
+                                  th:if="${conge.statutConge == 'EN_COURS'}">
+                                En cours
+                            </span>
+                            <span class="badge bg-secondary badge-statut" 
+                                  th:if="${conge.statutConge == 'TERMINE'}">
+                                Terminé
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="info-label">Niveau urgence</div>
+                            <div class="info-value">
+                                <span class="badge" 
+                                      th:classappend="${conge.niveauUrgence == 'URGENTE' ? 'bg-danger' : (conge.niveauUrgence == 'ELEVEE' ? 'bg-warning' : 'bg-info')}"
+                                      th:text="${conge.niveauUrgence != null ? conge.niveauUrgence : 'NORMALE'}">NORMALE</span>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="mb-2">
+                            <div class="info-label">Créé le</div>
+                            <div class="info-value small" th:text="${conge.audit != null and conge.audit.dateCreation != null ? #temporals.format(conge.audit.dateCreation, 'dd/MM/yyyy HH:mm') : '-'}">-</div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="info-label">Créé par</div>
+                            <div class="info-value small" th:text="${conge.audit != null and conge.audit.creePar != null ? conge.audit.creePar : '-'}">-</div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="info-label">Modifié le</div>
+                            <div class="info-value small" th:text="${conge.audit != null and conge.audit.dateModification != null ? #temporals.format(conge.audit.dateModification, 'dd/MM/yyyy HH:mm') : '-'}">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actions rapides -->
+                <div class="card shadow-sm mb-4" th:if="${conge.necessiteValidation()}">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-lightning"></i> Actions Rapides</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success" onclick="approveConge()">
+                                <i class="bi bi-check-circle"></i> Approuver le congé
+                            </button>
+                            <button class="btn btn-danger" onclick="rejectConge()">
+                                <i class="bi bi-x-circle"></i> Rejeter le congé
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Documents -->
+                <div class="card shadow-sm mb-4" th:if="${conge.documentsJustificatifs != null or conge.certificatsMedicaux != null}">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-file-earmark"></i> Documents</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${conge.documentsJustificatifs != null}">
+                            <div class="info-label">Documents justificatifs</div>
+                            <div class="info-value small" th:text="${conge.documentsJustificatifs}">URLs</div>
+                        </div>
+                        <div th:if="${conge.certificatsMedicaux != null}" class="mt-3">
+                            <div class="info-label">Certificats médicaux</div>
+                            <div class="info-value small" th:text="${conge.certificatsMedicaux}">URLs</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            function approveConge() {
+                if (confirm('Êtes-vous sûr de vouloir approuver ce congé ?')) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = /*[[@{/rh/conges/{uuid}/approve(uuid=${conge.uuid})}]]*/ '';
+                    
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_method';
+                    csrfInput.value = 'POST';
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+            
+            function rejectConge() {
+                const motif = prompt('Veuillez indiquer le motif du rejet :');
+                if (motif && motif.trim() !== '') {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = /*[[@{/rh/conges/{uuid}/reject(uuid=${conge.uuid})}]]*/ '';
+                    
+                    const motifInput = document.createElement('input');
+                    motifInput.type = 'hidden';
+                    motifInput.name = 'motif';
+                    motifInput.value = motif;
+                    form.appendChild(motifInput);
+                    
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_method';
+                    csrfInput.value = 'POST';
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+            
+            function confirmDelete() {
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce congé ?\n\nCette action est irréversible.')) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = /*[[@{/rh/conges/{uuid}(uuid=${conge.uuid})}]]*/ '';
+                    
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_method';
+                    csrfInput.value = 'DELETE';
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

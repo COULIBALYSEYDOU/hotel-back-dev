@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails Compétence</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/competences}"><i class="bi bi-award"></i> Compétences</a></li>
+                <li class="breadcrumb-item active">Détails</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1"><i class="bi bi-award text-primary"></i> <span th:text="${competence.nomCompetence}">Compétence</span></h1>
+                <p class="text-muted mb-0" th:text="${competence.employeNom != null ? 'Employé: ' + competence.employeNom : ''}">Employé</p>
+            </div>
+            <div>
+                <a th:href="@{/rh/competences/{uuid}/edit(uuid=${competence.uuid})}" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                <a th:href="@{/rh/competences}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Employé:</strong> <span th:text="${competence.employeNom}">N/A</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Compétence:</strong> <span th:text="${competence.nomCompetence}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Niveau:</strong> 
+                                <span class="badge bg-info" th:text="${competence.niveau != null ? competence.niveau : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Date obtention:</strong> 
+                                <span th:text="${competence.dateObtention != null ? #temporals.format(competence.dateObtention, 'dd/MM/yyyy') : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3" th:if="${competence.dateExpiration != null}">
+                                <strong>Date expiration:</strong> 
+                                <span th:text="${#temporals.format(competence.dateExpiration, 'dd/MM/yyyy')}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Certifié:</strong>
+                                <span class="badge bg-success" th:if="${competence.certifie}">Oui</span>
+                                <span class="badge bg-secondary" th:unless="${competence.certifie}">Non</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

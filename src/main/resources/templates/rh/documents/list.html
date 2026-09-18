@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Documents</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item active"><i class="bi bi-file-earmark"></i> Documents</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1"><i class="bi bi-file-earmark text-primary"></i> Liste des Documents</h1>
+                <p class="text-muted mb-0" th:if="${documents != null}">
+                    <span th:text="${documents.totalElements}">0</span> document(s) au total
+                </p>
+            </div>
+            <div>
+                <a th:href="@{/rh/documents/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nouveau document
+                </a>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/rh/documents}" method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label small">Rechercher</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="search" name="search" th:value="${param.search}" placeholder="Nom, type...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="type" class="form-label small">Type</label>
+                        <select class="form-select" id="type" name="type">
+                            <option value="">Tous</option>
+                            <option value="CONTRAT" th:selected="${param.type == 'CONTRAT'}">Contrat</option>
+                            <option value="CV" th:selected="${param.type == 'CV'}">CV</option>
+                            <option value="DIPLOME" th:selected="${param.type == 'DIPLOME'}">Diplôme</option>
+                            <option value="AUTRE" th:selected="${param.type == 'AUTRE'}">Autre</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100 me-2">
+                            <i class="bi bi-search"></i> Filtrer
+                        </button>
+                        <a th:href="@{/rh/documents}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Résultats</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Employé</th>
+                                <th>Date création</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="document : ${documents.content}">
+                                <td th:text="${document.nom != null ? document.nom : '-'}">-</td>
+                                <td>
+                                    <span class="badge bg-info" th:text="${document.typeDocument != null ? document.typeDocument : '-'}">-</span>
+                                </td>
+                                <td th:text="${document.employeNom != null ? document.employeNom : '-'}">-</td>
+                                <td th:text="${document.dateCreation != null ? #temporals.format(document.dateCreation, 'dd/MM/yyyy') : '-'}">-</td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{/rh/documents/{uuid}(uuid=${document.uuid})}" class="btn btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/rh/documents/{uuid}/edit(uuid=${document.uuid})}" class="btn btn-outline-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button class="btn btn-outline-danger" onclick="confirmDelete('${document.uuid}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${documents == null or #lists.isEmpty(documents.content)}">
+                                <td colspan="5" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                                    <p class="text-muted mt-3 mb-0">Aucun document trouvé</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-top" th:if="${documents != null and documents.totalPages > 1}">
+                <div th:replace="~{rh/components/pagination :: pagination}"></div>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            function confirmDelete(uuid) {
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/rh/documents/' + uuid;
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = '_method';
+                    input.value = 'DELETE';
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

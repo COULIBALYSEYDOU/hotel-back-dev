@@ -1,0 +1,114 @@
+package projet_hotelier.hotel.core.securite.enumeration;
+
+public enum Permission {
+
+    // -------------------
+    // Permissions GÉNÉRALES
+    // -------------------
+    LIRE,
+    CREER,
+    MODIFIER,
+    SUPPRIMER,
+    EXPORTER,
+    IMPORTER,
+    ARCHIVER,
+    RESTAURER,
+    APPROUVER,
+    REJETER,
+    VOIR_JOURNAL_AUDIT,
+
+    // -------------------
+    // Module CLIENT
+    // -------------------
+    CLIENT_CREER,
+    CLIENT_LIRE,
+    CLIENT_MODIFIER,
+    CLIENT_SUPPRIMER,
+    CLIENT_EXPORTER,
+    CLIENT_IMPORTER,
+    CLIENT_VOIR_HISTORIQUE,
+    CLIENT_ATTRIBUER_CHAMBRE,
+    CLIENT_CHECKIN,
+    CLIENT_CHECKOUT,
+    CLIENT_AJOUTER_NOTE,
+    CLIENT_GERER_SEGMENT,
+    CLIENT_GERER_FIDELITE,
+    CLIENT_VOIR_SATISFACTION,
+
+    // -------------------
+    // Module FACTURATION
+    // -------------------
+    FACTURE_CREER,
+    FACTURE_LIRE,
+    FACTURE_MODIFIER,
+    FACTURE_SUPPRIMER,
+    FACTURE_EXPORTER,
+    FACTURE_APPROUVER,
+    FACTURE_REJETER,
+    FACTURE_ENVOYER,
+    FACTURE_IMPRIMER,
+    FACTURE_REMBOURSER,
+    FACTURE_REMBOURSER_PARTIEL,
+    FACTURE_APPLIQUER_REMISE,
+    FACTURE_APPLIQUER_BON,
+    FACTURE_GERER_TAXES,
+    FACTURE_VOIR_GRAND_LIVRE,
+
+    // -------------------
+    // Module RH
+    // -------------------
+    RH_EMPLOYE_CREER,
+    RH_EMPLOYE_LIRE,
+    RH_EMPLOYE_MODIFIER,
+    RH_EMPLOYE_SUPPRIMER,
+    RH_EMPLOYE_EXPORTER,
+    RH_EMPLOYE_GERER_CONTRAT,
+    RH_EMPLOYE_GERER_FICHE_DE_PAIE,
+    RH_EMPLOYE_GERER_CONGES,
+    RH_EMPLOYE_GERER_PRESENCE,
+    RH_EMPLOYE_VOIR_SALAIRE,
+    RH_EMPLOYE_APPROUVER_CONGE,
+    RH_EMPLOYE_APPROUVER_FICHE_DE_PAIE,
+
+    // -------------------
+    // Module STRUCTURE (Hôtel)
+    // -------------------
+    HOTEL_CREER,
+    HOTEL_LIRE,
+    HOTEL_MODIFIER,
+    HOTEL_SUPPRIMER,
+    HOTEL_GERER_CHAMBRES,
+    HOTEL_GERER_DEPARTEMENTS,
+    HOTEL_GERER_GROUPE,
+    HOTEL_GERER_PARAMETRES,
+
+    // -------------------
+    // Module SÉCURITÉ / ADMIN
+    // -------------------
+    UTILISATEUR_CREER,
+    UTILISATEUR_LIRE,
+    UTILISATEUR_MODIFIER,
+    UTILISATEUR_SUPPRIMER,
+    ROLE_CREER,
+    ROLE_LIRE,
+    ROLE_MODIFIER,
+    ROLE_SUPPRIMER,
+    ROLE_ATTRIBUER,
+    PERMISSION_GERER,
+    PARAMETRES_SYSTEME_GERER,
+
+    // -------------------
+    // Module REPORTING
+    // -------------------
+    RAPPORT_VOIR,
+    RAPPORT_EXPORTER,
+    RAPPORT_PROGRAMMER,
+    RAPPORT_GERER_TABLEAU_BORD,
+
+    // -------------------
+    // Module INTELLIGENCE (IA)
+    // -------------------
+    IA_SUGGESTIONS_VOIR,
+    IA_SUGGESTIONS_APPLIQUER,
+    IA_MODELES_GERER
+}

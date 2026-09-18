@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails Fiche de Paie</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/fiches-paie}"><i class="bi bi-cash-stack"></i> Fiches de Paie</a></li>
+                <li class="breadcrumb-item active">Détails</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1"><i class="bi bi-cash-stack text-primary"></i> Fiche de Paie</h1>
+                <p class="text-muted mb-0" th:text="${fiche.employeNom + ' - ' + fiche.mois + '/' + fiche.annee}">Employé - Mois/Année</p>
+            </div>
+            <div>
+                <a th:href="@{/rh/fiches-paie/{uuid}/edit(uuid=${fiche.uuid})}" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                <button class="btn btn-outline-primary me-2" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Imprimer
+                </button>
+                <a th:href="@{/rh/fiches-paie}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Employé:</strong> <span th:text="${fiche.employeNom}">N/A</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Période:</strong> <span th:text="${fiche.mois + '/' + fiche.annee}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Salaire brut:</strong> 
+                                <span th:text="${fiche.salaireBrut != null ? #numbers.formatDecimal(fiche.salaireBrut, 0, 'POINT', 2, 'POINT') + ' ' + (fiche.devise != null ? fiche.devise : 'EUR') : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Net à payer:</strong> 
+                                <strong class="text-success" th:text="${fiche.netAPayer != null ? #numbers.formatDecimal(fiche.netAPayer, 0, 'POINT', 2, 'POINT') + ' ' + (fiche.devise != null ? fiche.devise : 'EUR') : '-'}">-</strong>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Statut:</strong>
+                                <span class="badge bg-secondary" th:if="${fiche.statutPaie == 'BROUILLON'}">Brouillon</span>
+                                <span class="badge bg-success" th:if="${fiche.statutPaie == 'VALIDE'}">Validé</span>
+                                <span class="badge bg-primary" th:if="${fiche.statutPaie == 'PAYE'}">Payé</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-calculator"></i> Détails des Charges</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <strong>Total charges:</strong> 
+                                <span th:text="${fiche.totalCharges != null ? #numbers.formatDecimal(fiche.totalCharges, 0, 'POINT', 2, 'POINT') + ' ' + (fiche.devise != null ? fiche.devise : 'EUR') : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Charges salariales:</strong> 
+                                <span th:text="${fiche.chargesSalariales != null ? #numbers.formatDecimal(fiche.chargesSalariales, 0, 'POINT', 2, 'POINT') + ' ' + (fiche.devise != null ? fiche.devise : 'EUR') : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Charges patronales:</strong> 
+                                <span th:text="${fiche.chargesPatronales != null ? #numbers.formatDecimal(fiche.chargesPatronales, 0, 'POINT', 2, 'POINT') + ' ' + (fiche.devise != null ? fiche.devise : 'EUR') : '-'}">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <strong>Date de paiement:</strong>
+                            <div th:text="${fiche.datePaiement != null ? #temporals.format(fiche.datePaiement, 'dd/MM/yyyy') : '-'}">-</div>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Méthode de paiement:</strong>
+                            <div th:text="${fiche.methodePaiement != null ? fiche.methodePaiement : '-'}">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

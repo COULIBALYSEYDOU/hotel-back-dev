@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item active"><i class="bi bi-bell"></i> Notifications</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1"><i class="bi bi-bell text-primary"></i> Notifications</h1>
+                <p class="text-muted mb-0" th:if="${notifications != null}">
+                    <span th:text="${notifications.totalElements}">0</span> notification(s) au total
+                </p>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Liste des Notifications</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <div th:each="notification : ${notifications.content}" 
+                         class="list-group-item" 
+                         th:classappend="${!notification.lue ? 'bg-light' : ''}">
+                        <div class="d-flex w-100 justify-content-between">
+                            <div>
+                                <h6 class="mb-1" th:text="${notification.titre != null ? notification.titre : 'Notification'}">Titre</h6>
+                                <p class="mb-1" th:text="${notification.message != null ? notification.message : '-'}">Message</p>
+                                <small class="text-muted" th:text="${notification.dateCreation != null ? #temporals.format(notification.dateCreation, 'dd/MM/yyyy HH:mm') : '-'}">Date</small>
+                            </div>
+                            <div>
+                                <span class="badge bg-primary" th:if="${!notification.lue}">Nouveau</span>
+                                <span class="badge" 
+                                      th:classappend="${notification.type == 'INFO' ? 'bg-info' : (notification.type == 'WARNING' ? 'bg-warning' : (notification.type == 'ERROR' ? 'bg-danger' : 'bg-secondary'))}"
+                                      th:text="${notification.type != null ? notification.type : '-'}">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${notifications == null or #lists.isEmpty(notifications.content)}" class="list-group-item text-center py-5">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                        <p class="text-muted mt-3 mb-0">Aucune notification</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-top" th:if="${notifications != null and notifications.totalPages > 1}">
+                <div th:replace="~{rh/components/pagination :: pagination}"></div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

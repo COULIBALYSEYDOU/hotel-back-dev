@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Breadcrumb Component -->
+    <nav th:fragment="breadcrumb" aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb mb-0">
+            <!-- Accueil (toujours présent) -->
+            <li class="breadcrumb-item">
+                <a th:href="@{/rh}" class="text-decoration-none">
+                    <i class="bi bi-house-door"></i> Accueil
+                </a>
+            </li>
+            
+            <!-- Items dynamiques (injectés par les pages enfants) -->
+            <th:block th:if="${breadcrumbItems != null}">
+                <li th:each="item, iterStat : ${breadcrumbItems}" 
+                    class="breadcrumb-item"
+                    th:classappend="${iterStat.last} ? 'active' : ''"
+                    th:attr="aria-current=${iterStat.last} ? 'page' : null">
+                    <a th:if="${!iterStat.last}" 
+                       th:href="${item.url}" 
+                       class="text-decoration-none"
+                       th:text="${item.label}">Item</a>
+                    <span th:if="${iterStat.last}" 
+                          th:text="${item.label}"
+                          class="text-muted">Item</span>
+                </li>
+            </th:block>
+            
+            <!-- Fallback : détection automatique basée sur l'URL -->
+            <th:block th:unless="${breadcrumbItems != null}">
+                <!-- Dashboard -->
+                <li th:if="${#strings.contains(#httpServletRequest.requestURI, '/dashboard')}" 
+                    class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-speedometer2"></i> Tableau de bord
+                </li>
+                
+                <!-- Employés -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/employes')}">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/rh/employes}" class="text-decoration-none">
+                            <i class="bi bi-people"></i> Employés
+                        </a>
+                    </li>
+                    <li th:if="${#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Nouvel employé
+                    </li>
+                    <li th:if="${employe != null and !#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        <span th:text="${employe.nom + ' ' + employe.prenom}">Détails</span>
+                    </li>
+                </th:block>
+                
+                <!-- Congés -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/conges')}">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/rh/conges}" class="text-decoration-none">
+                            <i class="bi bi-calendar-check"></i> Congés
+                        </a>
+                    </li>
+                    <li th:if="${#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Nouvelle demande
+                    </li>
+                    <li th:if="${conge != null and !#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Détails congé
+                    </li>
+                </th:block>
+                
+                <!-- Formations -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/formations')}">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/rh/formations}" class="text-decoration-none">
+                            <i class="bi bi-book"></i> Formations
+                        </a>
+                    </li>
+                    <li th:if="${#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Nouvelle formation
+                    </li>
+                    <li th:if="${formation != null and !#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Détails formation
+                    </li>
+                </th:block>
+                
+                <!-- Fiches de Paie -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/fiches-paie')}">
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <i class="bi bi-cash-stack"></i> Fiches de Paie
+                    </li>
+                    <li th:if="${fichePaie != null}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Fiche de paie
+                    </li>
+                </th:block>
+                
+                <!-- Contrats -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/contrats')}">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/rh/contrats}" class="text-decoration-none">
+                            <i class="bi bi-file-earmark-text"></i> Contrats
+                        </a>
+                    </li>
+                    <li th:if="${#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Nouveau contrat
+                    </li>
+                    <li th:if="${contrat != null and !#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Détails contrat
+                    </li>
+                </th:block>
+                
+                <!-- Temps de Travail -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/temps-travail')}">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/rh/temps-travail}" class="text-decoration-none">
+                            <i class="bi bi-clock"></i> Temps de Travail
+                        </a>
+                    </li>
+                    <li th:if="${#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Nouveau temps
+                    </li>
+                    <li th:if="${tempsTravail != null and !#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Détails temps
+                    </li>
+                </th:block>
+                
+                <!-- Recrutements -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/recrutements')}">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/rh/recrutements}" class="text-decoration-none">
+                            <i class="bi bi-person-badge"></i> Recrutements
+                        </a>
+                    </li>
+                    <li th:if="${#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Nouveau recrutement
+                    </li>
+                    <li th:if="${recrutement != null and !#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Détails recrutement
+                    </li>
+                </th:block>
+                
+                <!-- Compétences -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/competences')}">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/rh/competences}" class="text-decoration-none">
+                            <i class="bi bi-award"></i> Compétences
+                        </a>
+                    </li>
+                    <li th:if="${#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Nouvelle compétence
+                    </li>
+                    <li th:if="${competence != null and !#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Détails compétence
+                    </li>
+                </th:block>
+                
+                <!-- Évaluations -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/evaluations')}">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/rh/evaluations}" class="text-decoration-none">
+                            <i class="bi bi-graph-up-arrow"></i> Évaluations
+                        </a>
+                    </li>
+                    <li th:if="${#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Nouvelle évaluation
+                    </li>
+                    <li th:if="${evaluation != null and !#strings.contains(#httpServletRequest.requestURI, '/new')}" 
+                        class="breadcrumb-item active" aria-current="page">
+                        Détails évaluation
+                    </li>
+                </th:block>
+                
+                <!-- Onboarding -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/onboarding')}">
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <i class="bi bi-box-arrow-in-right"></i> Onboarding
+                    </li>
+                </th:block>
+                
+                <!-- Offboarding -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/offboarding')}">
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <i class="bi bi-box-arrow-right"></i> Offboarding
+                    </li>
+                </th:block>
+                
+                <!-- Conformité -->
+                <th:block th:if="${#strings.contains(#httpServletRequest.requestURI, '/conformite')}">
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <i class="bi bi-shield-check"></i> Conformité
+                    </li>
+                </th:block>
+            </th:block>
+        </ol>
+    </nav>
+    
+    <!-- Styles spécifiques au breadcrumb -->
+    <style>
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+        
+        .breadcrumb-item {
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb-item a {
+            color: var(--primary);
+            transition: color 0.2s ease;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: var(--dark);
+            text-decoration: underline;
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--secondary);
+        }
+        
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "\f285"; /* Bootstrap Icons chevron-right */
+            font-family: "bootstrap-icons";
+            color: var(--secondary);
+            padding: 0 0.5rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .breadcrumb {
+                font-size: 0.85rem;
+            }
+            
+            .breadcrumb-item i {
+                display: none; /* Masquer les icônes sur mobile pour économiser l'espace */
+            }
+        }
+    </style>
+</body>
+</html>

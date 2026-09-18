@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de bord RH</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .stat-card {
+                transition: transform 0.2s ease;
+                border-left: 4px solid;
+            }
+            
+            .stat-card:hover {
+                transform: translateY(-5px);
+            }
+            
+            .stat-card.primary {
+                border-left-color: var(--primary);
+            }
+            
+            .stat-card.success {
+                border-left-color: var(--success);
+            }
+            
+            .stat-card.info {
+                border-left-color: var(--info);
+            }
+            
+            .stat-card.warning {
+                border-left-color: var(--warning);
+            }
+            
+            .stat-card.danger {
+                border-left-color: var(--danger);
+            }
+            
+            .chart-container {
+                position: relative;
+                height: 300px;
+            }
+            
+            .mini-chart {
+                height: 200px;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-speedometer2"></i> Tableau de bord
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="bi bi-speedometer2 text-primary"></i> Tableau de bord RH
+                </h1>
+                <p class="text-muted mb-0">Vue d'ensemble des activités et statistiques RH</p>
+            </div>
+            <div>
+                <button class="btn btn-outline-secondary" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Imprimer
+                </button>
+            </div>
+        </div>
+        
+        <!-- Cartes statistiques principales -->
+        <div class="row g-4 mb-4">
+            <!-- Employés actifs -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card primary shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted text-uppercase mb-2 small">Employés actifs</h6>
+                                <h2 class="mb-0" th:text="${stats != null and stats.employesActifs != null ? stats.employesActifs : (view != null and view.employes != null ? view.employes.totalElements : '0')}">0</h2>
+                                <small class="text-muted">
+                                    <span th:if="${stats != null and stats.employesTotal != null}" 
+                                          th:text="'sur ' + ${stats.employesTotal} + ' total'">sur 0 total</span>
+                                </small>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 rounded p-3">
+                                <i class="bi bi-people-fill fs-2 text-primary"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{/rh/employes}" class="btn btn-sm btn-outline-primary">
+                                Voir tous <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Congés en attente -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card warning shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted text-uppercase mb-2 small">Congés en attente</h6>
+                                <h2 class="mb-0" th:text="${stats != null and stats.congesEnAttente != null ? stats.congesEnAttente : '0'}">0</h2>
+                                <small class="text-muted">
+                                    <span th:if="${stats != null and stats.congesTotal != null}" 
+                                          th:text="'sur ' + ${stats.congesTotal} + ' total'">sur 0 total</span>
+                                </small>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 rounded p-3">
+                                <i class="bi bi-calendar-check fs-2 text-warning"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{/rh/conges?statut=EN_ATTENTE}" class="btn btn-sm btn-outline-warning">
+                                Voir <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Formations en cours -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card info shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted text-uppercase mb-2 small">Formations en cours</h6>
+                                <h2 class="mb-0" th:text="${stats != null and stats.formationsEnCours != null ? stats.formationsEnCours : (view != null and view.formations != null ? view.formations.totalElements : '0')}">0</h2>
+                                <small class="text-muted">Actives</small>
+                            </div>
+                            <div class="bg-info bg-opacity-10 rounded p-3">
+                                <i class="bi bi-book fs-2 text-info"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{/rh/formations}" class="btn btn-sm btn-outline-info">
+                                Voir <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recrutements en cours -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card success shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-muted text-uppercase mb-2 small">Recrutements</h6>
+                                <h2 class="mb-0" th:text="${stats != null and stats.recrutementsEnCours != null ? stats.recrutementsEnCours : '0'}">0</h2>
+                                <small class="text-muted">En cours</small>
+                            </div>
+                            <div class="bg-success bg-opacity-10 rounded p-3">
+                                <i class="bi bi-person-badge fs-2 text-success"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{/rh/recrutements}" class="btn btn-sm btn-outline-success">
+                                Voir <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Graphiques -->
+        <div class="row g-4 mb-4">
+            <!-- Évolution des effectifs -->
+            <div class="col-xl-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up text-primary"></i> Évolution des effectifs
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="chartEffectifs"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Répartition par département -->
+            <div class="col-xl-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">
+                            <i class="bi bi-pie-chart text-info"></i> Répartition par département
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container mini-chart">
+                            <canvas id="chartDepartements"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tableaux récapitulatifs -->
+        <div class="row g-4 mb-4">
+            <!-- Congés en attente -->
+            <div class="col-xl-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calendar-check text-warning"></i> Congés en attente
+                        </h5>
+                        <a th:href="@{/rh/conges?statut=EN_ATTENTE}" class="btn btn-sm btn-outline-primary">
+                            Voir tout <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Employé</th>
+                                        <th>Type</th>
+                                        <th>Période</th>
+                                        <th>Jours</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${congesEnAttente != null and !#lists.isEmpty(congesEnAttente)}" 
+                                        th:each="conge : ${congesEnAttente}">
+                                        <td>
+                                            <span th:text="${conge.employeNom != null ? conge.employeNom : 'N/A'}">N/A</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary" th:text="${conge.typeConge}">ANNUEL</span>
+                                        </td>
+                                        <td>
+                                            <small th:text="${#temporals.format(conge.dateDebut, 'dd/MM/yyyy') + ' - ' + #temporals.format(conge.dateFin, 'dd/MM/yyyy')}">01/01/2024 - 15/01/2024</small>
+                                        </td>
+                                        <td th:text="${conge.nombreJours}">15</td>
+                                        <td>
+                                            <a th:href="@{/rh/conges/{uuid}(uuid=${conge.uuid})}" 
+                                               class="btn btn-xs btn-outline-primary btn-sm" 
+                                               title="Voir">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${congesEnAttente == null or #lists.isEmpty(congesEnAttente)}">
+                                        <td colspan="5" class="text-center text-muted py-3">
+                                            <i class="bi bi-inbox fs-4"></i>
+                                            <p class="mb-0 mt-2">Aucun congé en attente</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Derniers employés -->
+            <div class="col-xl-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-people text-primary"></i> Derniers employés
+                        </h5>
+                        <a th:href="@{/rh/employes}" class="btn btn-sm btn-outline-primary">
+                            Voir tout <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Matricule</th>
+                                        <th>Nom</th>
+                                        <th>Poste</th>
+                                        <th>Département</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${view != null and view.employes != null and !#lists.isEmpty(view.employes.content)}" 
+                                        th:each="employe : ${view.employes.content}">
+                                        <td th:text="${employe.matricule}">EMP001</td>
+                                        <td>
+                                            <span th:text="${employe.nom + ' ' + employe.prenom}">Nom Prénom</span>
+                                        </td>
+                                        <td th:text="${employe.poste}">Poste</td>
+                                        <td th:text="${employe.departement}">Département</td>
+                                        <td>
+                                            <a th:href="@{/rh/employes/{uuid}(uuid=${employe.uuid})}" 
+                                               class="btn btn-xs btn-outline-primary btn-sm" 
+                                               title="Voir">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${view == null or view.employes == null or #lists.isEmpty(view.employes.content)}">
+                                        <td colspan="5" class="text-center text-muted py-3">
+                                            <i class="bi bi-inbox fs-4"></i>
+                                            <p class="mb-0 mt-2">Aucun employé</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistiques supplémentaires -->
+        <div class="row g-4">
+            <!-- Évaluations à venir -->
+            <div class="col-xl-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">
+                            <i class="bi bi-graph-up-arrow text-info"></i> Évaluations à venir
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="mb-0" th:text="${stats != null and stats.evaluationsAVenir != null ? stats.evaluationsAVenir : '0'}">0</h3>
+                        <p class="text-muted mb-0 small">Dans les 30 prochains jours</p>
+                        <a th:href="@{/rh/evaluations}" class="btn btn-sm btn-outline-info mt-3">
+                            Voir <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétences expirantes -->
+            <div class="col-xl-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">
+                            <i class="bi bi-award text-warning"></i> Compétences expirantes
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="mb-0" th:text="${stats != null and stats.competencesExpirantes != null ? stats.competencesExpirantes : '0'}">0</h3>
+                        <p class="text-muted mb-0 small">Dans les 90 prochains jours</p>
+                        <a th:href="@{/rh/competences/expirant}" class="btn btn-sm btn-outline-warning mt-3">
+                            Voir <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Onboarding en cours -->
+            <div class="col-xl-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">
+                            <i class="bi bi-box-arrow-in-right text-success"></i> Onboarding en cours
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="mb-0" th:text="${stats != null and stats.onboardingEnCours != null ? stats.onboardingEnCours : '0'}">0</h3>
+                        <p class="text-muted mb-0 small">Processus d'intégration</p>
+                        <a th:href="@{/rh/onboarding}" class="btn btn-sm btn-outline-success mt-3">
+                            Voir <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                // Graphique évolution des effectifs
+                const ctxEffectifs = document.getElementById('chartEffectifs');
+                if (ctxEffectifs) {
+                    new Chart(ctxEffectifs, {
+                        type: 'line',
+                        data: {
+                            labels: /*[[${stats != null and stats.moisEffectifs != null ? stats.moisEffectifs : ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun']}]]*/ ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+                            datasets: [{
+                                label: 'Effectifs',
+                                data: /*[[${stats != null and stats.effectifs != null ? stats.effectifs : [10, 12, 15, 14, 16, 18]}]]*/ [10, 12, 15, 14, 16, 18],
+                                borderColor: 'rgb(13, 110, 253)',
+                                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Graphique répartition par département
+                const ctxDepartements = document.getElementById('chartDepartements');
+                if (ctxDepartements) {
+                    new Chart(ctxDepartements, {
+                        type: 'doughnut',
+                        data: {
+                            labels: /*[[${stats != null and stats.departements != null ? stats.departements : ['Réception', 'Restauration', 'Chambres', 'Direction']}]]*/ ['Réception', 'Restauration', 'Chambres', 'Direction'],
+                            datasets: [{
+                                data: /*[[${stats != null and stats.effectifsDepartements != null ? stats.effectifsDepartements : [5, 8, 12, 3]}]]*/ [5, 8, 12, 3],
+                                backgroundColor: [
+                                    'rgba(13, 110, 253, 0.8)',
+                                    'rgba(25, 135, 84, 0.8)',
+                                    'rgba(13, 202, 240, 0.8)',
+                                    'rgba(255, 193, 7, 0.8)'
+                                ],
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        usePointStyle: true
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html>

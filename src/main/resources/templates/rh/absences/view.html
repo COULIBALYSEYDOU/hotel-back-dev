@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails Absence</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/absences}"><i class="bi bi-calendar-x"></i> Absences</a></li>
+                <li class="breadcrumb-item active">Détails</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1"><i class="bi bi-calendar-x text-primary"></i> Absence</h1>
+                <p class="text-muted mb-0" th:text="${absence.employeNom != null ? 'Employé: ' + absence.employeNom : ''}">Employé</p>
+            </div>
+            <div>
+                <a th:href="@{/rh/absences/{uuid}/edit(uuid=${absence.uuid})}" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                <a th:href="@{/rh/absences}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Employé:</strong> <span th:text="${absence.employeNom}">N/A</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Date:</strong> 
+                                <span th:text="${absence.dateAbsence != null ? #temporals.format(absence.dateAbsence, 'dd/MM/yyyy') : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Type:</strong> 
+                                <span class="badge bg-info" th:text="${absence.typeAbsence != null ? absence.typeAbsence : '-'}">-</span>
+                            </div>
+                            <div class="col-12 mb-3" th:if="${absence.motif != null}">
+                                <strong>Motif:</strong>
+                                <div th:text="${absence.motif}">Motif</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

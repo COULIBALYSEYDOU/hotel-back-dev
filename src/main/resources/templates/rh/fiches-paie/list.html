@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Fiches de Paie</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-cash-stack"></i> Fiches de Paie
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="bi bi-cash-stack text-primary"></i> Liste des Fiches de Paie
+                </h1>
+                <p class="text-muted mb-0" th:if="${fichesPaie != null}">
+                    <span th:text="${fichesPaie.totalElements}">0</span> fiche(s) de paie au total
+                </p>
+            </div>
+            <div>
+                <a th:href="@{/rh/fiches-paie/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nouvelle fiche de paie
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filtres -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/rh/fiches-paie}" method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label small">Rechercher</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="search" name="search" th:value="${param.search}" placeholder="Employé...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="mois" class="form-label small">Mois</label>
+                        <input type="month" class="form-control" id="mois" name="mois" th:value="${param.mois}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="statut" class="form-label small">Statut</label>
+                        <select class="form-select" id="statut" name="statut">
+                            <option value="">Tous</option>
+                            <option value="BROUILLON" th:selected="${param.statut == 'BROUILLON'}">Brouillon</option>
+                            <option value="VALIDE" th:selected="${param.statut == 'VALIDE'}">Validé</option>
+                            <option value="PAYE" th:selected="${param.statut == 'PAYE'}">Payé</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100 me-2">
+                            <i class="bi bi-search"></i> Filtrer
+                        </button>
+                        <a th:href="@{/rh/fiches-paie}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tableau -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Résultats</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Employé</th>
+                                <th>Période</th>
+                                <th>Salaire brut</th>
+                                <th>Net à payer</th>
+                                <th>Statut</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="fiche : ${fichesPaie.content}">
+                                <td th:text="${fiche.employeNom != null ? fiche.employeNom : 'N/A'}">N/A</td>
+                                <td th:text="${fiche.mois != null ? fiche.mois + '/' + fiche.annee : '-'}">-</td>
+                                <td th:text="${fiche.salaireBrut != null ? #numbers.formatDecimal(fiche.salaireBrut, 0, 'POINT', 2, 'POINT') + ' ' + (fiche.devise != null ? fiche.devise : 'EUR') : '-'}">-</td>
+                                <td>
+                                    <strong th:text="${fiche.netAPayer != null ? #numbers.formatDecimal(fiche.netAPayer, 0, 'POINT', 2, 'POINT') + ' ' + (fiche.devise != null ? fiche.devise : 'EUR') : '-'}">-</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary" th:if="${fiche.statutPaie == 'BROUILLON'}">Brouillon</span>
+                                    <span class="badge bg-success" th:if="${fiche.statutPaie == 'VALIDE'}">Validé</span>
+                                    <span class="badge bg-primary" th:if="${fiche.statutPaie == 'PAYE'}">Payé</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{/rh/fiches-paie/{uuid}(uuid=${fiche.uuid})}" class="btn btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/rh/fiches-paie/{uuid}/edit(uuid=${fiche.uuid})}" class="btn btn-outline-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button class="btn btn-outline-danger" onclick="confirmDelete('${fiche.uuid}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${fichesPaie == null or #lists.isEmpty(fichesPaie.content)}">
+                                <td colspan="6" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                                    <p class="text-muted mt-3 mb-0">Aucune fiche de paie trouvée</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-top" th:if="${fichesPaie != null and fichesPaie.totalPages > 1}">
+                <div th:replace="~{rh/components/pagination :: pagination}"></div>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            function confirmDelete(uuid) {
+                if (confirm('Êtes-vous sûr de vouloir supprimer cette fiche de paie ?')) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/rh/fiches-paie/' + uuid;
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = '_method';
+                    input.value = 'DELETE';
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

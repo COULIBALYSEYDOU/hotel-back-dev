@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle demande de congé</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .required-field::after {
+                content: " *";
+                color: var(--danger);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh/conges}">
+                        <i class="bi bi-calendar-check"></i> Congés
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Nouvelle demande
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-1">
+                            <i class="bi bi-calendar-plus text-primary"></i> Nouvelle demande de congé
+                        </h1>
+                        <p class="text-muted mb-0">Remplissez le formulaire pour créer une nouvelle demande de congé</p>
+                    </div>
+                    <a th:href="@{/rh/conges}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </a>
+                </div>
+                
+                <!-- Formulaire -->
+                <form th:action="@{/rh/conges}" 
+                      th:object="${conge}" 
+                      method="post" 
+                      novalidate
+                      id="createCongeForm">
+                    
+                    <!-- Informations générales -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="employeId" class="form-label required-field">Employé</label>
+                                    <select class="form-select" 
+                                            th:classappend="${#fields.hasErrors('employeId')} ? 'is-invalid' : ''"
+                                            id="employeId" 
+                                            th:field="*{employeId}" 
+                                            required>
+                                        <option value="">-- Sélectionner un employé --</option>
+                                        <option th:each="emp : ${employes}" 
+                                                th:value="${emp.id}" 
+                                                th:text="${emp.nom + ' ' + emp.prenom + ' (' + emp.matricule + ')'}">
+                                            Employé
+                                        </option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('employeId')}" 
+                                         th:errors="*{employeId}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="typeConge" class="form-label required-field">Type de congé</label>
+                                    <select class="form-select" 
+                                            th:classappend="${#fields.hasErrors('typeConge')} ? 'is-invalid' : ''"
+                                            id="typeConge" 
+                                            th:field="*{typeConge}" 
+                                            required>
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="ANNUEL">Annuel</option>
+                                        <option value="MALADIE">Maladie</option>
+                                        <option value="MATERNITE">Maternité</option>
+                                        <option value="PATERNITE">Paternité</option>
+                                        <option value="PARENTAL">Parental</option>
+                                        <option value="SANS_SOLDE">Sans solde</option>
+                                        <option value="RECUPERATION">Récupération</option>
+                                        <option value="RTT">RTT</option>
+                                        <option value="EXCEPTIONNEL">Exceptionnel</option>
+                                        <option value="SABBATIQUE">Sabbatique</option>
+                                        <option value="FORMATION">Formation</option>
+                                        <option value="EVENEMENT_FAMILIAL">Événement familial</option>
+                                        <option value="AUTRE">Autre</option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('typeConge')}" 
+                                         th:errors="*{typeConge}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="dateDebut" class="form-label required-field">Date de début</label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           th:classappend="${#fields.hasErrors('dateDebut')} ? 'is-invalid' : ''"
+                                           id="dateDebut" 
+                                           th:field="*{dateDebut}" 
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('dateDebut')}" 
+                                         th:errors="*{dateDebut}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="dateFin" class="form-label required-field">Date de fin</label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           th:classappend="${#fields.hasErrors('dateFin')} ? 'is-invalid' : ''"
+                                           id="dateFin" 
+                                           th:field="*{dateFin}" 
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('dateFin')}" 
+                                         th:errors="*{dateFin}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="natureConge" class="form-label">Nature du congé</label>
+                                    <select class="form-select" id="natureConge" th:field="*{natureConge}">
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="PAYE">Payé</option>
+                                        <option value="NON_PAYE">Non payé</option>
+                                        <option value="PARTIELLEMENT_PAYE">Partiellement payé</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch mt-4">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               id="congéPartiel" 
+                                               th:field="*{congéPartiel}">
+                                        <label class="form-check-label" for="congéPartiel">
+                                            Congé partiel
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="motif" class="form-label">Motif</label>
+                                    <textarea class="form-control" 
+                                              id="motif" 
+                                              th:field="*{motif}" 
+                                              rows="3"
+                                              placeholder="Indiquez le motif de votre demande de congé..."></textarea>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="justification" class="form-label">Justification</label>
+                                    <textarea class="form-control" 
+                                              id="justification" 
+                                              th:field="*{justification}" 
+                                              rows="3"
+                                              placeholder="Justification détaillée..."></textarea>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="niveauUrgence" class="form-label">Niveau d'urgence</label>
+                                    <select class="form-select" id="niveauUrgence" th:field="*{niveauUrgence}">
+                                        <option value="NORMALE">Normale</option>
+                                        <option value="ELEVEE">Élevée</option>
+                                        <option value="URGENTE">Urgente</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch mt-4">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               id="urgenceMedicale" 
+                                               th:field="*{urgenceMedicale}">
+                                        <label class="form-check-label" for="urgenceMedicale">
+                                            Urgence médicale
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Documents -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-file-earmark"></i> Documents (optionnel)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="documentsJustificatifs" class="form-label">Documents justificatifs (URLs séparées par des virgules)</label>
+                                    <textarea class="form-control" 
+                                              id="documentsJustificatifs" 
+                                              th:field="*{documentsJustificatifs}" 
+                                              rows="2"
+                                              placeholder="https://example.com/doc1.pdf, https://example.com/doc2.pdf"></textarea>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="certificatsMedicaux" class="form-label">Certificats médicaux (URLs séparées par des virgules)</label>
+                                    <textarea class="form-control" 
+                                              id="certificatsMedicaux" 
+                                              th:field="*{certificatsMedicaux}" 
+                                              rows="2"
+                                              placeholder="https://example.com/certificat.pdf"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Boutons d'action -->
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/rh/conges}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Créer la demande
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            // Validation Bootstrap
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('form[novalidate]')
+                Array.prototype.slice.call(forms).forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+            })()
+            
+            // Validation des dates
+            document.getElementById('dateDebut').addEventListener('change', function() {
+                const dateDebut = new Date(this.value);
+                const dateFin = document.getElementById('dateFin');
+                if (dateFin.value) {
+                    const dateFinValue = new Date(dateFin.value);
+                    if (dateFinValue < dateDebut) {
+                        dateFin.setCustomValidity('La date de fin doit être après la date de début');
+                    } else {
+                        dateFin.setCustomValidity('');
+                        // Calculer le nombre de jours
+                        calculateDays();
+                    }
+                }
+            });
+            
+            document.getElementById('dateFin').addEventListener('change', function() {
+                const dateDebut = document.getElementById('dateDebut');
+                if (dateDebut.value) {
+                    const dateDebutValue = new Date(dateDebut.value);
+                    const dateFinValue = new Date(this.value);
+                    if (dateFinValue < dateDebutValue) {
+                        this.setCustomValidity('La date de fin doit être après la date de début');
+                    } else {
+                        this.setCustomValidity('');
+                        // Calculer le nombre de jours
+                        calculateDays();
+                    }
+                }
+            });
+            
+            function calculateDays() {
+                const dateDebut = document.getElementById('dateDebut').value;
+                const dateFin = document.getElementById('dateFin').value;
+                if (dateDebut && dateFin) {
+                    const debut = new Date(dateDebut);
+                    const fin = new Date(dateFin);
+                    const diffTime = Math.abs(fin - debut);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    // Afficher le nombre de jours (peut être affiché dans un élément HTML si nécessaire)
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

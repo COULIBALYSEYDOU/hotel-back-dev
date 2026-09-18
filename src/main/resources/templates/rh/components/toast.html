@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Toast Container -->
+    <div th:fragment="toast-container" 
+         id="toast-container" 
+         class="toast-container position-fixed top-0 end-0 p-3"
+         style="z-index: 1055;">
+        <!-- Les toasts seront injectés dynamiquement ici -->
+    </div>
+    
+    <!-- Toast Success Template -->
+    <div th:fragment="toast-success(message, title)" 
+         th:if="${message != null}"
+         class="toast align-items-center text-white bg-success border-0" 
+         role="alert" 
+         aria-live="assertive" 
+         aria-atomic="true"
+         data-bs-delay="5000"
+         data-bs-autohide="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong th:if="${title != null}" th:text="${title}">Succès</strong>
+                <span th:if="${title != null}"> : </span>
+                <span th:text="${message}">Message</span>
+            </div>
+            <button type="button" 
+                    class="btn-close btn-close-white me-2 m-auto" 
+                    data-bs-dismiss="toast" 
+                    aria-label="Fermer"></button>
+        </div>
+    </div>
+    
+    <!-- Toast Error Template -->
+    <div th:fragment="toast-error(message, title)" 
+         th:if="${message != null}"
+         class="toast align-items-center text-white bg-danger border-0" 
+         role="alert" 
+         aria-live="assertive" 
+         aria-atomic="true"
+         data-bs-delay="7000"
+         data-bs-autohide="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong th:if="${title != null}" th:text="${title}">Erreur</strong>
+                <span th:if="${title != null}"> : </span>
+                <span th:text="${message}">Message</span>
+            </div>
+            <button type="button" 
+                    class="btn-close btn-close-white me-2 m-auto" 
+                    data-bs-dismiss="toast" 
+                    aria-label="Fermer"></button>
+        </div>
+    </div>
+    
+    <!-- Toast Warning Template -->
+    <div th:fragment="toast-warning(message, title)" 
+         th:if="${message != null}"
+         class="toast align-items-center text-white bg-warning border-0" 
+         role="alert" 
+         aria-live="assertive" 
+         aria-atomic="true"
+         data-bs-delay="6000"
+         data-bs-autohide="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                <strong th:if="${title != null}" th:text="${title}">Attention</strong>
+                <span th:if="${title != null}"> : </span>
+                <span th:text="${message}">Message</span>
+            </div>
+            <button type="button" 
+                    class="btn-close btn-close-white me-2 m-auto" 
+                    data-bs-dismiss="toast" 
+                    aria-label="Fermer"></button>
+        </div>
+    </div>
+    
+    <!-- Toast Info Template -->
+    <div th:fragment="toast-info(message, title)" 
+         th:if="${message != null}"
+         class="toast align-items-center text-white bg-info border-0" 
+         role="alert" 
+         aria-live="polite" 
+         aria-atomic="true"
+         data-bs-delay="5000"
+         data-bs-autohide="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong th:if="${title != null}" th:text="${title}">Information</strong>
+                <span th:if="${title != null}"> : </span>
+                <span th:text="${message}">Message</span>
+            </div>
+            <button type="button" 
+                    class="btn-close btn-close-white me-2 m-auto" 
+                    data-bs-dismiss="toast" 
+                    aria-label="Fermer"></button>
+        </div>
+    </div>
+    
+    <!-- Toast avec message flash depuis le serveur -->
+    <th:block th:if="${successMessage != null}">
+        <div class="toast align-items-center text-white bg-success border-0" 
+             role="alert" 
+             aria-live="assertive" 
+             aria-atomic="true"
+             data-bs-delay="5000"
+             data-bs-autohide="true"
+             id="toast-success-flash">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span th:text="${successMessage}">Message de succès</span>
+                </div>
+                <button type="button" 
+                        class="btn-close btn-close-white me-2 m-auto" 
+                        data-bs-dismiss="toast" 
+                        aria-label="Fermer"></button>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block th:if="${errorMessage != null}">
+        <div class="toast align-items-center text-white bg-danger border-0" 
+             role="alert" 
+             aria-live="assertive" 
+             aria-atomic="true"
+             data-bs-delay="7000"
+             data-bs-autohide="true"
+             id="toast-error-flash">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span th:text="${errorMessage}">Message d'erreur</span>
+                </div>
+                <button type="button" 
+                        class="btn-close btn-close-white me-2 m-auto" 
+                        data-bs-dismiss="toast" 
+                        aria-label="Fermer"></button>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block th:if="${warningMessage != null}">
+        <div class="toast align-items-center text-white bg-warning border-0" 
+             role="alert" 
+             aria-live="assertive" 
+             aria-atomic="true"
+             data-bs-delay="6000"
+             data-bs-autohide="true"
+             id="toast-warning-flash">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                    <span th:text="${warningMessage}">Message d'avertissement</span>
+                </div>
+                <button type="button" 
+                        class="btn-close btn-close-white me-2 m-auto" 
+                        data-bs-dismiss="toast" 
+                        aria-label="Fermer"></button>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block th:if="${infoMessage != null}">
+        <div class="toast align-items-center text-white bg-info border-0" 
+             role="alert" 
+             aria-live="polite" 
+             aria-atomic="true"
+             data-bs-delay="5000"
+             data-bs-autohide="true"
+             id="toast-info-flash">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <span th:text="${infoMessage}">Message d'information</span>
+                </div>
+                <button type="button" 
+                        class="btn-close btn-close-white me-2 m-auto" 
+                        data-bs-dismiss="toast" 
+                        aria-label="Fermer"></button>
+            </div>
+        </div>
+    </th:block>
+    
+    <!-- Script pour initialiser les toasts flash au chargement -->
+    <script th:if="${successMessage != null or errorMessage != null or warningMessage != null or infoMessage != null}">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les toasts flash s'ils existent
+            const toastElements = document.querySelectorAll('.toast[id$="-flash"]');
+            toastElements.forEach(function(toastEl) {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+                
+                // Nettoyer après fermeture
+                toastEl.addEventListener('hidden.bs.toast', function() {
+                    toastEl.remove();
+                });
+            });
+        });
+    </script>
+    
+    <!-- Styles spécifiques aux toasts -->
+    <style>
+        .toast-container {
+            max-width: 350px;
+        }
+        
+        .toast {
+            min-width: 300px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            margin-bottom: 0.5rem;
+        }
+        
+        .toast-body {
+            flex: 1;
+            padding: 0.75rem;
+        }
+        
+        .toast-body i {
+            font-size: 1.25rem;
+        }
+        
+        .btn-close {
+            opacity: 0.8;
+        }
+        
+        .btn-close:hover {
+            opacity: 1;
+        }
+        
+        /* Animation d'entrée personnalisée */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .toast.showing {
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        /* Responsive */
+        @media (max-width: 576px) {
+            .toast-container {
+                max-width: 100%;
+                left: 0;
+                right: 0;
+                padding: 1rem;
+            }
+            
+            .toast {
+                min-width: 100%;
+            }
+        }
+    </style>
+</body>
+</html>

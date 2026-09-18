@@ -1,0 +1,1466 @@
+[
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/client/ClientController.java",
+    "class": "ClientController",
+    "base": "/api/clientele/client/clients",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/client/clients",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/client/clients/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/clients/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/clients/email/{email}",
+        "method": "findByEmail"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/clients",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/clients/segment/{segment}",
+        "method": "findBySegment"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/clients/statut/{statut}",
+        "method": "findByStatut"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/clients/risque-churn/{risqueChurn}",
+        "method": "findByRisqueChurn"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/client/clients/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/clients/exists/email/{email}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/client/ClientPreferenceController.java",
+    "class": "ClientPreferenceController",
+    "base": "/api/clientele/client/preferences",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/client/preferences",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/client/preferences/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/preferences/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/preferences/client/{clientId}",
+        "method": "findByClientId"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/client/preferences/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/preferences/exists/client/{clientId}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/client/ClientProfilController.java",
+    "class": "ClientProfilController",
+    "base": "/api/clientele/client/profils",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/client/profils",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/client/profils/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/profils/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/profils/client/{clientId}",
+        "method": "findByClientId"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/client/profils/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/client/profils/exists/client/{clientId}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/i18n/TraductionController.java",
+    "class": "TraductionController",
+    "base": "/api/clientele/i18n/traductions",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/i18n/traductions",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/i18n/traductions/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/i18n/traductions/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/i18n/traductions/cle/{cleTraduction}/langue/{langue}",
+        "method": "findByCleAndLangue"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/i18n/traductions",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/i18n/traductions/langue/{langue}",
+        "method": "findByLangue"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/i18n/traductions/langue/{langue}/prefixe/{prefixe}",
+        "method": "findTraductionsParPrefixe"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/i18n/traductions/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/i18n/traductions/exists/cle/{cleTraduction}/langue/{langue}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/compliance/ConsentementClientController.java",
+    "class": "ConsentementClientController",
+    "base": "/api/clientele/compliance/consentements",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/compliance/consentements",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/compliance/consentements/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/consentements/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/consentements/client/{clientId}",
+        "method": "findByClientId"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/consentements",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/consentements/valides",
+        "method": "findConsentementsValides"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/consentements/client/{clientId}/valides",
+        "method": "findConsentementsValidesParClient"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/consentements/expirant-avant",
+        "method": "findConsentementsExpirantAvant"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/compliance/consentements/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/consentements/exists/client/{clientId}/type/{typeConsentement}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/compliance/ConformiteGDPRController.java",
+    "class": "ConformiteGDPRController",
+    "base": "/api/clientele/compliance/conformite-gdpr",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/compliance/conformite-gdpr",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/compliance/conformite-gdpr/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/conformite-gdpr/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/conformite-gdpr/hotel/{hotelId}",
+        "method": "findByHotelId"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/conformite-gdpr",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/conformite-gdpr/conformes",
+        "method": "findConformes"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/conformite-gdpr/audits-prochains",
+        "method": "findAuditsProchains"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/compliance/conformite-gdpr/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/conformite-gdpr/exists/hotel/{hotelId}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/compliance/PolitiqueConfidentialiteController.java",
+    "class": "PolitiqueConfidentialiteController",
+    "base": "/api/clientele/compliance/politiques-confidentialite",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/compliance/politiques-confidentialite",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/compliance/politiques-confidentialite/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/politiques-confidentialite/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/politiques-confidentialite",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/politiques-confidentialite/type/{typePolitique}",
+        "method": "findByType"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/politiques-confidentialite/langue/{langue}",
+        "method": "findByLangue"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/politiques-confidentialite/actives",
+        "method": "findPolitiquesActives"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/compliance/politiques-confidentialite/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/compliance/politiques-confidentialite/exists/version/{versionPolitique}/langue/{langue}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/integration/LogIntegrationController.java",
+    "class": "LogIntegrationController",
+    "base": "/api/clientele/integration/logs",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/integration/logs",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/integration/logs/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/logs/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/logs/integration/{integrationId}",
+        "method": "findByIntegrationId"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/logs",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/logs/periode",
+        "method": "findLogsParPeriode"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/logs/integration/{integrationId}/echecs",
+        "method": "findLogsEchecs"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/logs/integration/{integrationId}/stats/succes",
+        "method": "countSucces"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/logs/integration/{integrationId}/stats/echecs",
+        "method": "countEchecs"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/integration/IntegrationTierceController.java",
+    "class": "IntegrationTierceController",
+    "base": "/api/clientele/integration/integrations-tierces",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/integration/integrations-tierces",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/integration/integrations-tierces/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/integrations-tierces/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/integrations-tierces",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/integrations-tierces/type/{typeIntegration}",
+        "method": "findByType"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/integrations-tierces/auto-actives",
+        "method": "findIntegrationsAutoActives"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/integrations-tierces/a-synchroniser",
+        "method": "findIntegrationsASynchroniser"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/integration/integrations-tierces/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/integration/integrations-tierces/exists/nom/{nom}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/organisation/ConfigurationHotelController.java",
+    "class": "ConfigurationHotelController",
+    "base": "/api/clientele/organisation/configurations-hotel",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/organisation/configurations-hotel",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/organisation/configurations-hotel/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/organisation/configurations-hotel/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/organisation/configurations-hotel/hotel/{hotelId}",
+        "method": "findByHotelId"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/organisation/configurations-hotel",
+        "method": "findAll"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/organisation/configurations-hotel/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/organisation/configurations-hotel/exists/hotel/{hotelId}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/reporting/RapportPersonnaliseController.java",
+    "class": "RapportPersonnaliseController",
+    "base": "/api/clientele/reporting/rapports",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/reporting/rapports",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/reporting/rapports/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/rapports/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/rapports",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/rapports/a-scheduler",
+        "method": "findRapportsAScheduler"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/rapports/partages",
+        "method": "findRapportsPartages"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/reporting/rapports/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/rapports/exists/nom/{nom}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/reporting/MetriquePerformanceController.java",
+    "class": "MetriquePerformanceController",
+    "base": "/api/clientele/reporting/metriques",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/reporting/metriques",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/reporting/metriques/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/metriques/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/metriques",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/metriques/type/{typeMetrique}/periode",
+        "method": "findMetriquesParTypeEtPeriode"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/metriques/date/{date}",
+        "method": "findMetriquesParDate"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/metriques/type/{typeMetrique}/moyenne",
+        "method": "calculerMoyenneParType"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/clientele/controller/api/reporting/TableauBordController.java",
+    "class": "TableauBordController",
+    "base": "/api/clientele/reporting/tableaux-bord",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/clientele/reporting/tableaux-bord",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/clientele/reporting/tableaux-bord/{id}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/tableaux-bord/{id}",
+        "method": "findById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/tableaux-bord",
+        "method": "findAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/tableaux-bord/par-defaut",
+        "method": "findTableauxParDefaut"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/tableaux-bord/role/{roleCible}",
+        "method": "findTableauxParRole"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/tableaux-bord/utilisateur/{utilisateurId}",
+        "method": "findTableauxParUtilisateur"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/clientele/reporting/tableaux-bord/{id}",
+        "method": "delete"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/clientele/reporting/tableaux-bord/exists/nom/{nom}",
+        "method": "exists"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/planning/controller/channel/ChannelDistributionController.java",
+    "class": "ChannelDistributionController",
+    "base": "/api/v1/planning/channels",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/planning/channels",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/planning/channels/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/channels/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/channels",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/channels/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "PATCH",
+        "path": "/api/v1/planning/channels/{uuid}/sync",
+        "method": "marquerSynchronise"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/planning/channels/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/planning/controller/chambre/ChambreController.java",
+    "class": "ChambreController",
+    "base": "/api/v1/planning/chambres",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/planning/chambres",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/planning/chambres/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/chambres/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/chambres/numero/{numero}",
+        "method": "getByNumero"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/chambres",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/chambres/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "PATCH",
+        "path": "/api/v1/planning/chambres/{uuid}/hors-service",
+        "method": "setHorsService"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/planning/chambres/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/planning/controller/housekeeping/HousekeepingTaskController.java",
+    "class": "HousekeepingTaskController",
+    "base": "/api/v1/planning/housekeeping",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/planning/housekeeping",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/planning/housekeeping/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/housekeeping/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/housekeeping/chambre/{chambreId}",
+        "method": "getByChambre"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/housekeeping/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "PATCH",
+        "path": "/api/v1/planning/housekeeping/{uuid}/executee",
+        "method": "marquerExecutee"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/planning/housekeeping/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/planning/controller/tarification/TarificationController.java",
+    "class": "TarificationController",
+    "base": "/api/v1/planning/tarifications",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/planning/tarifications",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/planning/tarifications/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/tarifications/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/tarifications/code/{code}",
+        "method": "getByCode"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/tarifications",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/tarifications/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/planning/tarifications/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/planning/controller/evenement/EvenementHotelController.java",
+    "class": "EvenementHotelController",
+    "base": "/api/v1/planning/evenements",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/planning/evenements",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/planning/evenements/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/evenements/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/evenements/code/{code}",
+        "method": "getByCode"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/evenements",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/evenements/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/planning/evenements/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/planning/controller/reservation/ReservationController.java",
+    "class": "ReservationController",
+    "base": "/api/v1/planning/reservations",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/planning/reservations",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/planning/reservations/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/reservations/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/reservations/code/{code}",
+        "method": "getByCode"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/reservations/client/{clientId}",
+        "method": "getByClient"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/reservations/periode",
+        "method": "getByPeriode"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/reservations/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/planning/reservations/disponibilite",
+        "method": ""
+      },
+      {
+        "verb": "PATCH",
+        "path": "/api/v1/planning/reservations/{uuid}/statut",
+        "method": "changerStatut"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/planning/reservations/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/temps/TempsTravailController.java",
+    "class": "TempsTravailController",
+    "base": "/api/v1/rh/temps-travail",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/temps-travail",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/rh/temps-travail/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/temps-travail/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/temps-travail/id/{id}",
+        "method": "getById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/temps-travail",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/temps-travail/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/temps-travail/employe/{employeId}",
+        "method": "getByEmploye"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/temps-travail/date/{date}",
+        "method": "getByDate"
+      },
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/temps-travail/{uuid}/validate",
+        "method": "validate"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/rh/temps-travail/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/contrat/ContratTravailController.java",
+    "class": "ContratTravailController",
+    "base": "/api/v1/rh/contrats",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/contrats",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/rh/contrats/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/contrats/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/contrats/id/{id}",
+        "method": "getById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/contrats",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/contrats/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/contrats/employe/{employeId}",
+        "method": "getByEmploye"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/rh/contrats/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/conge/CongeController.java",
+    "class": "CongeController",
+    "base": "/api/v1/rh/conges",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/conges",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/rh/conges/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/conges/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/conges/id/{id}",
+        "method": "getById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/conges",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/conges/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/conges/employe/{employeId}",
+        "method": "getByEmploye"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/conges/statut/{statut}",
+        "method": "getByStatut"
+      },
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/conges/{uuid}/approve",
+        "method": "approve"
+      },
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/conges/{uuid}/reject",
+        "method": "reject"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/rh/conges/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/evaluation/EvaluationController.java",
+    "class": "EvaluationController",
+    "base": "/api/v1/rh/evaluations",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/evaluations",
+        "method": "demarrerEvaluation"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/rh/evaluations/{uuid}/completer",
+        "method": "completerEvaluation"
+      },
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/evaluations/{uuid}/valider",
+        "method": "validerEvaluation"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/evaluations/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/evaluations/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/evaluations/employe/{employeId}",
+        "method": "getByEmploye"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/formation/FormationController.java",
+    "class": "FormationController",
+    "base": "/api/v1/rh/formations",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/formations",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/rh/formations/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/formations/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/formations/id/{id}",
+        "method": "getById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/formations",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/formations/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/formations/employe/{employeId}",
+        "method": "getByEmploye"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/formations/statut/{statut}",
+        "method": "getByStatut"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/rh/formations/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/recrutement/RecrutementController.java",
+    "class": "RecrutementController",
+    "base": "/api/v1/rh/recrutements",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/recrutements",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/rh/recrutements/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/recrutements/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/recrutements/id/{id}",
+        "method": "getById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/recrutements",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/recrutements/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/recrutements/statut/{statut}",
+        "method": "getByStatut"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/rh/recrutements/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/onboarding/OnboardingController.java",
+    "class": "OnboardingController",
+    "base": "/api/v1/rh/onboarding",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/onboarding/{employeUuid}/demarrer",
+        "method": "demarrerOnboarding"
+      },
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/onboarding/{employeUuid}/etape/{etape}/valider",
+        "method": "validerEtape"
+      },
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/onboarding/{employeUuid}/finaliser",
+        "method": "finaliserOnboarding"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/competence/CompetenceController.java",
+    "class": "CompetenceController",
+    "base": "/api/v1/rh/competences",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/competences",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/rh/competences/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/competences/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/competences/employe/{employeId}",
+        "method": "getByEmploye"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/competences/expirant",
+        "method": "getExpirantBientot"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/competences/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/competences/{uuid}/valider",
+        "method": "valider"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/rh/competences/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/web/RhWebController.java",
+    "class": "RhWebController",
+    "base": "/rh",
+    "endpoints": [
+      {
+        "verb": "GET",
+        "path": "/rh",
+        "method": "index"
+      },
+      {
+        "verb": "GET",
+        "path": "/rh/employes",
+        "method": "listEmployes"
+      },
+      {
+        "verb": "GET",
+        "path": "/rh/employes/{uuid}",
+        "method": "viewEmploye"
+      },
+      {
+        "verb": "GET",
+        "path": "/rh/employes/new",
+        "method": "newEmployeForm"
+      },
+      {
+        "verb": "GET",
+        "path": "/rh/conges",
+        "method": "listConges"
+      },
+      {
+        "verb": "GET",
+        "path": "/rh/formations",
+        "method": "listFormations"
+      },
+      {
+        "verb": "GET",
+        "path": "/rh/fiches-paie",
+        "method": "listFichesPaie"
+      },
+      {
+        "verb": "GET",
+        "path": "/rh/dashboard",
+        "method": "dashboard"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/paie/FichePaieController.java",
+    "class": "FichePaieController",
+    "base": "/api/v1/rh/fiches-paie",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/fiches-paie",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/rh/fiches-paie/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/fiches-paie/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/fiches-paie/id/{id}",
+        "method": "getById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/fiches-paie",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/fiches-paie/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/fiches-paie/employe/{employeId}",
+        "method": "getByEmploye"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/fiches-paie/employe/{employeId}/mois/{mois}/annee/{annee}",
+        "method": "getByEmployeAndPeriod"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/rh/fiches-paie/{uuid}",
+        "method": "delete"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/employe/EmployeController.java",
+    "class": "EmployeController",
+    "base": "/api/v1/rh/employes",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/employes",
+        "method": "create"
+      },
+      {
+        "verb": "PUT",
+        "path": "/api/v1/rh/employes/{uuid}",
+        "method": "update"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/employes/{uuid}",
+        "method": "getByUuid"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/employes/id/{id}",
+        "method": "getById"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/employes",
+        "method": "getAll"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/employes/paginated",
+        "method": "getAllPaginated"
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/employes/departement/{departement}",
+        "method": "getByDepartement"
+      },
+      {
+        "verb": "DELETE",
+        "path": "/api/v1/rh/employes/{uuid}",
+        "method": "delete"
+      },
+      {
+        "verb": "PATCH",
+        "path": "/api/v1/rh/employes/{uuid}/activate",
+        "method": "activate"
+      },
+      {
+        "verb": "PATCH",
+        "path": "/api/v1/rh/employes/{uuid}/deactivate",
+        "method": "deactivate"
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/conformite/ConformiteController.java",
+    "class": "ConformiteController",
+    "base": "/api/v1/rh/conformite",
+    "endpoints": [
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/conformite/employe/{employeUuid}/verifier",
+        "method": ""
+      },
+      {
+        "verb": "GET",
+        "path": "/api/v1/rh/conformite/employe/{employeUuid}/plan-action",
+        "method": ""
+      }
+    ]
+  },
+  {
+    "file": "projet_hotelier/hotel/module/rh/controller/offboarding/OffboardingController.java",
+    "class": "OffboardingController",
+    "base": "/api/v1/rh/offboarding",
+    "endpoints": [
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/offboarding/{employeUuid}/demarrer",
+        "method": "demarrerOffboarding"
+      },
+      {
+        "verb": "POST",
+        "path": "/api/v1/rh/offboarding/{employeUuid}/etape/{etape}/valider",
+        "method": "validerEtape"
+      }
+    ]
+  }
+]

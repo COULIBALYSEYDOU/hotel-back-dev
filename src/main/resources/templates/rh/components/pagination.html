@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Pagination Component -->
+    <nav th:fragment="pagination" 
+         th:if="${page != null and page.totalPages > 1}"
+         aria-label="Pagination de navigation"
+         class="mt-4">
+        <ul class="pagination justify-content-center mb-0">
+            <!-- Bouton Précédent -->
+            <li class="page-item" 
+                th:classappend="${page.first} ? 'disabled' : ''">
+                <a class="page-link" 
+                   th:if="${!page.first}"
+                   th:href="@{${baseUrl}(page=${page.number - 1}, size=${page.size}, sort=${sort}, order=${order}, search=${param.search}, statut=${param.statut})}"
+                   aria-label="Précédent">
+                    <i class="bi bi-chevron-left"></i>
+                    <span class="d-none d-sm-inline ms-1">Précédent</span>
+                </a>
+                <span class="page-link" 
+                      th:if="${page.first}"
+                      aria-disabled="true"
+                      tabindex="-1">
+                    <i class="bi bi-chevron-left"></i>
+                    <span class="d-none d-sm-inline ms-1">Précédent</span>
+                </span>
+            </li>
+            
+            <!-- Première page -->
+            <li class="page-item" 
+                th:if="${page.number > 2}"
+                th:classappend="${page.number == 0} ? 'active' : ''">
+                <a class="page-link" 
+                   th:href="@{${baseUrl}(page=0, size=${page.size}, sort=${sort}, order=${order}, search=${param.search}, statut=${param.statut})}"
+                   th:text="1">1</a>
+            </li>
+            
+            <!-- Points de suspension avant -->
+            <li class="page-item disabled" 
+                th:if="${page.number > 3}">
+                <span class="page-link">...</span>
+            </li>
+            
+            <!-- Pages autour de la page courante -->
+            <th:block th:with="start=${#numbers.max(0, page.number - 2)}, 
+                              end=${#numbers.min(page.totalPages - 1, page.number + 2)}">
+                <li th:each="i : ${#numbers.sequence(start, end)}" 
+                    class="page-item"
+                    th:classappend="${i == page.number} ? 'active' : ''">
+                    <a class="page-link" 
+                       th:if="${i != page.number}"
+                       th:href="@{${baseUrl}(page=${i}, size=${page.size}, sort=${sort}, order=${order}, search=${param.search}, statut=${param.statut})}"
+                       th:text="${i + 1}">1</a>
+                    <span class="page-link" 
+                          th:if="${i == page.number}"
+                          th:text="${i + 1}">1</span>
+                </li>
+            </th:block>
+            
+            <!-- Points de suspension après -->
+            <li class="page-item disabled" 
+                th:if="${page.number < page.totalPages - 4}">
+                <span class="page-link">...</span>
+            </li>
+            
+            <!-- Dernière page -->
+            <li class="page-item" 
+                th:if="${page.totalPages > 1 and page.number < page.totalPages - 3}"
+                th:classappend="${page.number == page.totalPages - 1} ? 'active' : ''">
+                <a class="page-link" 
+                   th:href="@{${baseUrl}(page=${page.totalPages - 1}, size=${page.size}, sort=${sort}, order=${order}, search=${param.search}, statut=${param.statut})}"
+                   th:text="${page.totalPages}">1</a>
+            </li>
+            
+            <!-- Bouton Suivant -->
+            <li class="page-item" 
+                th:classappend="${page.last} ? 'disabled' : ''">
+                <a class="page-link" 
+                   th:if="${!page.last}"
+                   th:href="@{${baseUrl}(page=${page.number + 1}, size=${page.size}, sort=${sort}, order=${order}, search=${param.search}, statut=${param.statut})}"
+                   aria-label="Suivant">
+                    <span class="d-none d-sm-inline me-1">Suivant</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <span class="page-link" 
+                      th:if="${page.last}"
+                      aria-disabled="true"
+                      tabindex="-1">
+                    <span class="d-none d-sm-inline me-1">Suivant</span>
+                    <i class="bi bi-chevron-right"></i>
+                </span>
+            </li>
+        </ul>
+        
+        <!-- Informations de pagination -->
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                <i class="bi bi-info-circle"></i>
+                Affichage de 
+                <strong th:text="${page.number * page.size + 1}">1</strong>
+                à 
+                <strong th:text="${page.number * page.size + page.numberOfElements}">20</strong>
+                sur 
+                <strong th:text="${page.totalElements}">100</strong>
+                résultat(s)
+                <span th:if="${page.totalPages > 1}">
+                    - Page <strong th:text="${page.number + 1}">1</strong> sur <strong th:text="${page.totalPages}">5</strong>
+                </span>
+            </small>
+        </div>
+        
+        <!-- Sélecteur de taille de page -->
+        <div class="text-center mt-2" th:if="${showPageSize != false}">
+            <small class="text-muted me-2">Éléments par page :</small>
+            <div class="btn-group btn-group-sm" role="group">
+                <a th:each="size : ${pageSizes != null ? pageSizes : {10, 20, 50, 100}}"
+                   class="btn btn-outline-secondary"
+                   th:classappend="${size == page.size} ? 'active' : ''"
+                   th:href="@{${baseUrl}(page=0, size=${size}, sort=${sort}, order=${order}, search=${param.search}, statut=${param.statut})}"
+                   th:text="${size}">20</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Pagination simplifiée (fallback si page n'est pas un objet Page) -->
+    <nav th:fragment="pagination-simple"
+         th:if="${totalPages != null and totalPages > 1}"
+         aria-label="Pagination de navigation"
+         class="mt-4">
+        <ul class="pagination justify-content-center mb-0">
+            <!-- Bouton Précédent -->
+            <li class="page-item" 
+                th:classappend="${currentPage == 0} ? 'disabled' : ''">
+                <a class="page-link" 
+                   th:if="${currentPage > 0}"
+                   th:href="@{${baseUrl}(page=${currentPage - 1}, size=${pageSize != null ? pageSize : 20}, sort=${sort}, order=${order}, search=${param.search}, statut=${param.statut})}"
+                   aria-label="Précédent">
+                    <i class="bi bi-chevron-left"></i>
+                    <span class="d-none d-sm-inline ms-1">Précédent</span>
+                </a>
+                <span class="page-link" 
+                      th:if="${currentPage == 0}"
+                      aria-disabled="true"
+                      tabindex="-1">
+                    <i class="bi bi-chevron-left"></i>
+                    <span class="d-none d-sm-inline ms-1">Précédent</span>
+                </span>
+            </li>
+            
+            <!-- Pages -->
+            <th:block th:with="start=${#numbers.max(0, currentPage - 2)}, 
+                              end=${#numbers.min(totalPages - 1, currentPage + 2)}">
+                <li th:each="i : ${#numbers.sequence(start, end)}" 
+                    class="page-item"
+                    th:classappend="${i == currentPage} ? 'active' : ''">
+                    <a class="page-link" 
+                       th:if="${i != currentPage}"
+                       th:href="@{${baseUrl}(page=${i}, size=${pageSize != null ? pageSize : 20}, sort=${sort}, order=${order}, search=${param.search}, statut=${param.statut})}"
+                       th:text="${i + 1}">1</a>
+                    <span class="page-link" 
+                          th:if="${i == currentPage}"
+                          th:text="${i + 1}">1</span>
+                </li>
+            </th:block>
+            
+            <!-- Bouton Suivant -->
+            <li class="page-item" 
+                th:classappend="${currentPage == totalPages - 1} ? 'disabled' : ''">
+                <a class="page-link" 
+                   th:if="${currentPage < totalPages - 1}"
+                   th:href="@{${baseUrl}(page=${currentPage + 1}, size=${pageSize != null ? pageSize : 20}, sort=${sort}, order=${order}, search=${param.search}, statut=${param.statut})}"
+                   aria-label="Suivant">
+                    <span class="d-none d-sm-inline me-1">Suivant</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <span class="page-link" 
+                      th:if="${currentPage == totalPages - 1}"
+                      aria-disabled="true"
+                      tabindex="-1">
+                    <span class="d-none d-sm-inline me-1">Suivant</span>
+                    <i class="bi bi-chevron-right"></i>
+                </span>
+            </li>
+        </ul>
+        
+        <!-- Informations de pagination -->
+        <div class="text-center mt-3" th:if="${totalItems != null}">
+            <small class="text-muted">
+                <i class="bi bi-info-circle"></i>
+                Total : <strong th:text="${totalItems}">100</strong> résultat(s)
+                <span th:if="${totalPages > 1}">
+                    - Page <strong th:text="${currentPage + 1}">1</strong> sur <strong th:text="${totalPages}">5</strong>
+                </span>
+            </small>
+        </div>
+    </nav>
+    
+    <!-- Styles spécifiques à la pagination -->
+    <style>
+        .pagination {
+            --bs-pagination-padding-x: 0.75rem;
+            --bs-pagination-padding-y: 0.375rem;
+            --bs-pagination-font-size: 0.9rem;
+        }
+        
+        .page-link {
+            color: var(--primary);
+            border-color: #dee2e6;
+            transition: all 0.2s ease;
+        }
+        
+        .page-link:hover {
+            color: var(--dark);
+            background-color: var(--light);
+            border-color: #dee2e6;
+        }
+        
+        .page-item.active .page-link {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+            cursor: not-allowed;
+        }
+        
+        .btn-group-sm .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .btn-group-sm .btn.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 576px) {
+            .pagination {
+                font-size: 0.85rem;
+            }
+            
+            .page-link {
+                padding: 0.25rem 0.5rem;
+            }
+        }
+    </style>
+</body>
+</html>

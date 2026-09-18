@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${employe.nom + ' ' + employe.prenom + ' - Détails'}">Détails Employé</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .profile-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 2rem 0;
+                margin-bottom: 2rem;
+                border-radius: 0 0 1rem 1rem;
+            }
+            
+            .avatar-large {
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                border: 4px solid white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 3rem;
+                font-weight: bold;
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+            
+            .info-section {
+                margin-bottom: 1.5rem;
+            }
+            
+            .info-label {
+                font-weight: 600;
+                color: var(--secondary);
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                margin-bottom: 0.25rem;
+            }
+            
+            .info-value {
+                font-size: 1rem;
+                color: var(--dark);
+            }
+            
+            .nav-tabs .nav-link {
+                color: var(--secondary);
+            }
+            
+            .nav-tabs .nav-link.active {
+                color: var(--primary);
+                font-weight: 600;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh/employes}">
+                        <i class="bi bi-people"></i> Employés
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <span th:text="${employe.nom + ' ' + employe.prenom}">Détails</span>
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <!-- Header avec actions -->
+        <div class="profile-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <div class="avatar-large" 
+                             th:text="${#strings.substring(employe.nom, 0, 1) + #strings.substring(employe.prenom, 0, 1)}">
+                            NP
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h1 class="h3 mb-1" th:text="${employe.nom + ' ' + employe.prenom}">Nom Prénom</h1>
+                        <p class="mb-1" th:text="${employe.poste}">Poste</p>
+                        <p class="mb-0 small opacity-75" th:text="${employe.departement}">Département</p>
+                    </div>
+                    <div class="col-auto">
+                        <div class="btn-group" role="group">
+                            <a th:href="@{/rh/employes/{uuid}/edit(uuid=${employe.uuid})}" class="btn btn-light">
+                                <i class="bi bi-pencil"></i> Modifier
+                            </a>
+                            <button class="btn btn-light" onclick="window.print()">
+                                <i class="bi bi-printer"></i> Imprimer
+                            </button>
+                            <button class="btn btn-light" onclick="confirmDelete()">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </button>
+                            <a th:href="@{/rh/employes}" class="btn btn-light">
+                                <i class="bi bi-arrow-left"></i> Retour
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="row">
+                <!-- Colonne principale -->
+                <div class="col-lg-8">
+                    <!-- Onglets pour organiser les informations -->
+                    <ul class="nav nav-tabs mb-4" id="infoTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                                <i class="bi bi-info-circle"></i> Informations
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="professionnel-tab" data-bs-toggle="tab" data-bs-target="#professionnel" type="button" role="tab">
+                                <i class="bi bi-briefcase"></i> Professionnel
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab">
+                                <i class="bi bi-telephone"></i> Contact
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">
+                                <i class="bi bi-file-earmark"></i> Documents
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="performance-tab" data-bs-toggle="tab" data-bs-target="#performance" type="button" role="tab">
+                                <i class="bi bi-graph-up"></i> Performance
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Contenu des onglets -->
+                    <div class="tab-content" id="infoTabsContent">
+                        <!-- Onglet Informations -->
+                        <div class="tab-pane fade show active" id="info" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-person"></i> Informations Personnelles</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Matricule</div>
+                                            <div class="info-value" th:text="${employe.matricule}">EMP001</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Date de naissance</div>
+                                            <div class="info-value" th:text="${employe.dateNaissance != null ? #temporals.format(employe.dateNaissance, 'dd/MM/yyyy') : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Lieu de naissance</div>
+                                            <div class="info-value" th:text="${employe.lieuNaissance != null ? employe.lieuNaissance : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Sexe</div>
+                                            <div class="info-value" th:text="${employe.sexe != null ? employe.sexe : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Civilité</div>
+                                            <div class="info-value" th:text="${employe.civilite != null ? employe.civilite : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">État civil</div>
+                                            <div class="info-value" th:text="${employe.etatCivil != null ? employe.etatCivil : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Nationalité</div>
+                                            <div class="info-value" th:text="${employe.nationalite != null ? employe.nationalite : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Pays de résidence</div>
+                                            <div class="info-value" th:text="${employe.paysResidence != null ? employe.paysResidence : '-'}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Adresse</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12 info-section">
+                                            <div class="info-label">Adresse complète</div>
+                                            <div class="info-value" th:text="${employe.adresse != null ? employe.adresse : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-4 info-section">
+                                            <div class="info-label">Ville</div>
+                                            <div class="info-value" th:text="${employe.ville != null ? employe.ville : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-4 info-section">
+                                            <div class="info-label">Code postal</div>
+                                            <div class="info-value" th:text="${employe.codePostal != null ? employe.codePostal : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-4 info-section">
+                                            <div class="info-label">Région</div>
+                                            <div class="info-value" th:text="${employe.region != null ? employe.region : '-'}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet Professionnel -->
+                        <div class="tab-pane fade" id="professionnel" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-briefcase"></i> Informations Professionnelles</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Poste</div>
+                                            <div class="info-value" th:text="${employe.poste}">Poste</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Département</div>
+                                            <div class="info-value" th:text="${employe.departement != null ? employe.departement : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Service</div>
+                                            <div class="info-value" th:text="${employe.service != null ? employe.service : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Direction</div>
+                                            <div class="info-value" th:text="${employe.direction != null ? employe.direction : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Niveau hiérarchique</div>
+                                            <div class="info-value" th:text="${employe.niveauHierarchique != null ? employe.niveauHierarchique : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Catégorie professionnelle</div>
+                                            <div class="info-value" th:text="${employe.categorieProfessionnelle != null ? employe.categorieProfessionnelle : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Date d'embauche</div>
+                                            <div class="info-value" th:text="${employe.dateEmbauche != null ? #temporals.format(employe.dateEmbauche, 'dd/MM/yyyy') : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Type de contrat</div>
+                                            <div class="info-value" th:text="${employe.typeContrat != null ? employe.typeContrat : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Régime de travail</div>
+                                            <div class="info-value" th:text="${employe.regimeTravail != null ? employe.regimeTravail : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Taux de travail</div>
+                                            <div class="info-value" th:text="${employe.tauxTravail != null ? employe.tauxTravail + '%' : '-'}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-cash-stack"></i> Rémunération</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Salaire de base</div>
+                                            <div class="info-value" th:text="${employe.salaireBase != null ? #numbers.formatDecimal(employe.salaireBase, 0, 'POINT', 2, 'POINT') + ' ' + (employe.deviseSalaire != null ? employe.deviseSalaire : 'EUR') : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Taux horaire</div>
+                                            <div class="info-value" th:text="${employe.tauxHoraire != null ? #numbers.formatDecimal(employe.tauxHoraire, 0, 'POINT', 2, 'POINT') + ' ' + (employe.deviseSalaire != null ? employe.deviseSalaire : 'EUR') + '/h' : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Périodicité de paie</div>
+                                            <div class="info-value" th:text="${employe.periodicitePaie != null ? employe.periodicitePaie : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Heures hebdomadaires</div>
+                                            <div class="info-value" th:text="${employe.heuresHebdomadaires != null ? employe.heuresHebdomadaires + 'h' : '-'}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet Contact -->
+                        <div class="tab-pane fade" id="contact" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-telephone"></i> Coordonnées</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Email</div>
+                                            <div class="info-value">
+                                                <a th:if="${employe.email != null}" 
+                                                   th:href="'mailto:' + ${employe.email}" 
+                                                   th:text="${employe.email}">email@example.com</a>
+                                                <span th:unless="${employe.email != null}" class="text-muted">-</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Téléphone</div>
+                                            <div class="info-value">
+                                                <a th:if="${employe.telephone != null}" 
+                                                   th:href="'tel:' + ${employe.telephone}" 
+                                                   th:text="${employe.telephone}">+33 1 23 45 67 89</a>
+                                                <span th:unless="${employe.telephone != null}" class="text-muted">-</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Téléphone secondaire</div>
+                                            <div class="info-value" th:text="${employe.telephoneSecondaire != null ? employe.telephoneSecondaire : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">WhatsApp</div>
+                                            <div class="info-value" th:text="${employe.whatsapp != null ? employe.whatsapp : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">LinkedIn</div>
+                                            <div class="info-value">
+                                                <a th:if="${employe.linkedin != null}" 
+                                                   th:href="${employe.linkedin}" 
+                                                   target="_blank"
+                                                   th:text="${employe.linkedin}">LinkedIn</a>
+                                                <span th:unless="${employe.linkedin != null}" class="text-muted">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-person-heart"></i> Contacts d'urgence</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Contact urgence 1</div>
+                                            <div class="info-value" th:text="${employe.contactUrgenceNom != null ? employe.contactUrgenceNom + ' - ' + (employe.contactUrgenceTelephone != null ? employe.contactUrgenceTelephone : '') : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Contact urgence 2</div>
+                                            <div class="info-value" th:text="${employe.contactUrgence2Nom != null ? employe.contactUrgence2Nom + ' - ' + (employe.contactUrgence2Telephone != null ? employe.contactUrgence2Telephone : '') : '-'}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet Documents -->
+                        <div class="tab-pane fade" id="documents" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Documents Légaux</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">CNPS</div>
+                                            <div class="info-value" th:text="${employe.cnpsNumero != null ? employe.cnpsNumero : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">NIF</div>
+                                            <div class="info-value" th:text="${employe.nif != null ? employe.nif : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Numéro passeport</div>
+                                            <div class="info-value" th:text="${employe.numeroPasseport != null ? employe.numeroPasseport : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Carte d'identité</div>
+                                            <div class="info-value" th:text="${employe.numeroCarteIdentite != null ? employe.numeroCarteIdentite : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Permis de conduire</div>
+                                            <div class="info-value" th:text="${employe.numeroPermisConduire != null ? employe.numeroPermisConduire : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Permis de travail</div>
+                                            <div class="info-value" th:text="${employe.numeroPermisTravail != null ? employe.numeroPermisTravail : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section" th:if="${employe.dateExpirationPermisTravail != null}">
+                                            <div class="info-label">Expiration permis travail</div>
+                                            <div class="info-value" th:text="${#temporals.format(employe.dateExpirationPermisTravail, 'dd/MM/yyyy')}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-bank"></i> Informations Bancaires</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Banque</div>
+                                            <div class="info-value" th:text="${employe.banque != null ? employe.banque : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">RIB</div>
+                                            <div class="info-value" th:text="${employe.rib != null ? employe.rib : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">IBAN</div>
+                                            <div class="info-value" th:text="${employe.iban != null ? employe.iban : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">BIC</div>
+                                            <div class="info-value" th:text="${employe.bic != null ? employe.bic : '-'}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet Performance -->
+                        <div class="tab-pane fade" id="performance" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Performance & Évaluation</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Score performance global</div>
+                                            <div class="info-value">
+                                                <span th:if="${employe.scorePerformanceGlobal != null}" 
+                                                      th:text="${#numbers.formatDecimal(employe.scorePerformanceGlobal, 0, 'POINT', 1, 'POINT') + '/100'}"
+                                                      class="badge bg-primary fs-6">0/100</span>
+                                                <span th:unless="${employe.scorePerformanceGlobal != null}" class="text-muted">-</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Dernière évaluation</div>
+                                            <div class="info-value" th:text="${employe.dateDerniereEvaluation != null ? #temporals.format(employe.dateDerniereEvaluation, 'dd/MM/yyyy') : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Prochaine évaluation</div>
+                                            <div class="info-value" th:text="${employe.dateProchaineEvaluation != null ? #temporals.format(employe.dateProchaineEvaluation, 'dd/MM/yyyy') : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-6 info-section">
+                                            <div class="info-label">Statut évaluation</div>
+                                            <div class="info-value">
+                                                <span class="badge" 
+                                                      th:classappend="${employe.statutEvaluation == 'EN_COURS' ? 'bg-warning' : (employe.statutEvaluation == 'COMPLETE' ? 'bg-success' : 'bg-secondary')}"
+                                                      th:text="${employe.statutEvaluation != null ? employe.statutEvaluation : '-'}">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Congés & Absences</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3 info-section">
+                                            <div class="info-label">Solde acquis</div>
+                                            <div class="info-value" th:text="${employe.soldeCongesAcquis != null ? employe.soldeCongesAcquis + ' jours' : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-3 info-section">
+                                            <div class="info-label">Solde pris</div>
+                                            <div class="info-value" th:text="${employe.soldeCongesPris != null ? employe.soldeCongesPris + ' jours' : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-3 info-section">
+                                            <div class="info-label">Solde restant</div>
+                                            <div class="info-value" th:text="${employe.soldeCongesRestant != null ? employe.soldeCongesRestant + ' jours' : '-'}">-</div>
+                                        </div>
+                                        <div class="col-md-3 info-section">
+                                            <div class="info-label">RTT</div>
+                                            <div class="info-value" th:text="${employe.soldeRtt != null ? employe.soldeRtt + ' jours' : '-'}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Colonne latérale -->
+                <div class="col-lg-4">
+                    <!-- Statut et informations rapides -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Statut</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="info-label">Statut employé</div>
+                                <span class="badge bg-success fs-6" 
+                                      th:if="${employe.statutEmploye == 'ACTIF' or (employe.audit != null and employe.audit.actif)}">
+                                    Actif
+                                </span>
+                                <span class="badge bg-warning fs-6" th:if="${employe.statutEmploye == 'PERIODE_ESSAI'}">
+                                    Période d'essai
+                                </span>
+                                <span class="badge bg-secondary fs-6" th:if="${employe.statutEmploye != null and employe.statutEmploye != 'ACTIF' and employe.statutEmploye != 'PERIODE_ESSAI' and (employe.audit == null or !employe.audit.actif)}">
+                                    <span th:text="${employe.statutEmploye}">Inactif</span>
+                                </span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="info-label">Onboarding</div>
+                                <div class="info-value">
+                                    <span class="badge" 
+                                          th:classappend="${employe.statutOnboarding == 'COMPLETE' ? 'bg-success' : (employe.statutOnboarding == 'EN_COURS' ? 'bg-warning' : 'bg-secondary')}"
+                                          th:text="${employe.statutOnboarding != null ? employe.statutOnboarding : 'NON_DEMARRE'}">NON_DEMARRE</span>
+                                </div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="mb-2">
+                                <div class="info-label">Créé le</div>
+                                <div class="info-value small" th:text="${employe.audit != null and employe.audit.dateCreation != null ? #temporals.format(employe.audit.dateCreation, 'dd/MM/yyyy HH:mm') : '-'}">-</div>
+                            </div>
+                            <div class="mb-2">
+                                <div class="info-label">Créé par</div>
+                                <div class="info-value small" th:text="${employe.audit != null and employe.audit.creePar != null ? employe.audit.creePar : '-'}">-</div>
+                            </div>
+                            <div class="mb-2">
+                                <div class="info-label">Modifié le</div>
+                                <div class="info-value small" th:text="${employe.audit != null and employe.audit.dateModification != null ? #temporals.format(employe.audit.dateModification, 'dd/MM/yyyy HH:mm') : '-'}">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions rapides -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-lightning"></i> Actions Rapides</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a th:href="@{/rh/conges/new(employeId=${employe.id})}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-calendar-plus"></i> Nouveau congé
+                                </a>
+                                <a th:href="@{/rh/formations/new(employeId=${employe.id})}" class="btn btn-outline-info btn-sm">
+                                    <i class="bi bi-book-plus"></i> Nouvelle formation
+                                </a>
+                                <a th:href="@{/rh/evaluations/new(employeId=${employe.id})}" class="btn btn-outline-warning btn-sm">
+                                    <i class="bi bi-graph-up-arrow"></i> Nouvelle évaluation
+                                </a>
+                                <a th:href="@{/rh/competences/new(employeId=${employe.id})}" class="btn btn-outline-success btn-sm">
+                                    <i class="bi bi-award"></i> Ajouter compétence
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Liens vers modules associés -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Modules Associés</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <a th:href="@{/rh/conges?employeId={id}(id=${employe.id})}" class="text-decoration-none">
+                                        <i class="bi bi-calendar-check text-success"></i> Congés
+                                        <span th:if="${conges != null}" class="badge bg-success ms-2" th:text="${#lists.size(conges)}">0</span>
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a th:href="@{/rh/formations?employeId={id}(id=${employe.id})}" class="text-decoration-none">
+                                        <i class="bi bi-book text-info"></i> Formations
+                                        <span th:if="${formations != null}" class="badge bg-info ms-2" th:text="${#lists.size(formations)}">0</span>
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a th:href="@{/rh/fiches-paie?employeId={id}(id=${employe.id})}" class="text-decoration-none">
+                                        <i class="bi bi-cash-stack text-warning"></i> Fiches de paie
+                                        <span th:if="${fichesPaie != null}" class="badge bg-warning ms-2" th:text="${#lists.size(fichesPaie)}">0</span>
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a th:href="@{/rh/evaluations?employeId={id}(id=${employe.id})}" class="text-decoration-none">
+                                        <i class="bi bi-graph-up-arrow text-primary"></i> Évaluations
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            function confirmDelete() {
+                if (confirm('Êtes-vous sûr de vouloir supprimer cet employé ?\n\nCette action est irréversible.')) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = /*[[@{/rh/employes/{uuid}(uuid=${employe.uuid})}]]*/ '';
+                    
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_method';
+                    csrfInput.value = 'DELETE';
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

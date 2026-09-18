@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Module RH - Accueil</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .hero-section {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 4rem 0;
+                margin-bottom: 3rem;
+                border-radius: 0 0 2rem 2rem;
+            }
+            
+            .module-card {
+                transition: all 0.3s ease;
+                border: none;
+                height: 100%;
+            }
+            
+            .module-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+            }
+            
+            .module-icon {
+                font-size: 3.5rem;
+                margin-bottom: 1rem;
+                display: block;
+            }
+            
+            .stats-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+            }
+            
+            .quick-action-btn {
+                border-radius: 50px;
+                padding: 0.5rem 1.5rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-house-door"></i> Accueil
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1 class="display-4 fw-bold mb-3">
+                            <i class="bi bi-people-fill me-3"></i>
+                            Module Ressources Humaines
+                        </h1>
+                        <p class="lead mb-4">
+                            Système de gestion RH enterprise-grade pour votre établissement hôtelier.
+                            Gestion complète du personnel, conformité légale multi-pays et analytics intégrés.
+                        </p>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <a th:href="@{/rh/dashboard}" class="btn btn-light btn-lg quick-action-btn">
+                                <i class="bi bi-speedometer2"></i> Tableau de bord
+                            </a>
+                            <a th:href="@{/rh/employes}" class="btn btn-outline-light btn-lg quick-action-btn">
+                                <i class="bi bi-people"></i> Gérer les employés
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                        <i class="bi bi-shield-check" style="font-size: 8rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <!-- Statistiques rapides -->
+            <div class="row mb-5" th:if="${stats != null}">
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card stats-card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-people fs-1 mb-2"></i>
+                            <h3 class="mb-0" th:text="${stats.employesActifs != null ? stats.employesActifs : '0'}">0</h3>
+                            <p class="mb-0">Employés actifs</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card stats-card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-check fs-1 mb-2"></i>
+                            <h3 class="mb-0" th:text="${stats.congesEnAttente != null ? stats.congesEnAttente : '0'}">0</h3>
+                            <p class="mb-0">Congés en attente</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card stats-card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-book fs-1 mb-2"></i>
+                            <h3 class="mb-0" th:text="${stats.formationsEnCours != null ? stats.formationsEnCours : '0'}">0</h3>
+                            <p class="mb-0">Formations en cours</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card stats-card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-person-badge fs-1 mb-2"></i>
+                            <h3 class="mb-0" th:text="${stats.recrutementsEnCours != null ? stats.recrutementsEnCours : '0'}">0</h3>
+                            <p class="mb-0">Recrutements</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modules principaux -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="h4 mb-4">
+                        <i class="bi bi-grid-3x3-gap text-primary"></i> Modules disponibles
+                    </h2>
+                </div>
+            </div>
+            
+            <div class="row g-4 mb-5">
+                <!-- Employés -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-people-fill module-icon text-primary"></i>
+                            <h5 class="card-title fw-bold">Employés</h5>
+                            <p class="card-text text-muted small">
+                                Gestion complète du personnel, contrats, informations et profils
+                            </p>
+                            <a th:href="@{/rh/employes}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Congés -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-calendar-check module-icon text-success"></i>
+                            <h5 class="card-title fw-bold">Congés</h5>
+                            <p class="card-text text-muted small">
+                                Gestion des demandes, approbations et suivi des congés
+                            </p>
+                            <a th:href="@{/rh/conges}" class="btn btn-success btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Formations -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-book module-icon text-info"></i>
+                            <h5 class="card-title fw-bold">Formations</h5>
+                            <p class="card-text text-muted small">
+                                Suivi des formations, compétences et certifications
+                            </p>
+                            <a th:href="@{/rh/formations}" class="btn btn-info btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fiches de Paie -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-cash-stack module-icon text-warning"></i>
+                            <h5 class="card-title fw-bold">Fiches de Paie</h5>
+                            <p class="card-text text-muted small">
+                                Gestion des bulletins de salaire et rémunérations
+                            </p>
+                            <a th:href="@{/rh/fiches-paie}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contrats -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-file-earmark-text module-icon text-secondary"></i>
+                            <h5 class="card-title fw-bold">Contrats</h5>
+                            <p class="card-text text-muted small">
+                                Gestion des contrats de travail et périodes d'essai
+                            </p>
+                            <a th:href="@{/rh/contrats}" class="btn btn-secondary btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Temps de Travail -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-clock module-icon text-primary"></i>
+                            <h5 class="card-title fw-bold">Temps de Travail</h5>
+                            <p class="card-text text-muted small">
+                                Suivi et validation des heures travaillées
+                            </p>
+                            <a th:href="@{/rh/temps-travail}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recrutements -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-person-badge module-icon text-success"></i>
+                            <h5 class="card-title fw-bold">Recrutements</h5>
+                            <p class="card-text text-muted small">
+                                Suivi des candidatures et processus de recrutement
+                            </p>
+                            <a th:href="@{/rh/recrutements}" class="btn btn-success btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Compétences -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-award module-icon text-info"></i>
+                            <h5 class="card-title fw-bold">Compétences</h5>
+                            <p class="card-text text-muted small">
+                                Gestion des compétences techniques et linguistiques
+                            </p>
+                            <a th:href="@{/rh/competences}" class="btn btn-info btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Évaluations -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-graph-up-arrow module-icon text-warning"></i>
+                            <h5 class="card-title fw-bold">Évaluations</h5>
+                            <p class="card-text text-muted small">
+                                Évaluations de performance et entretiens annuels
+                            </p>
+                            <a th:href="@{/rh/evaluations}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onboarding -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-box-arrow-in-right module-icon text-success"></i>
+                            <h5 class="card-title fw-bold">Onboarding</h5>
+                            <p class="card-text text-muted small">
+                                Processus d'intégration des nouveaux employés
+                            </p>
+                            <a th:href="@{/rh/onboarding}" class="btn btn-success btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Offboarding -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-box-arrow-right module-icon text-danger"></i>
+                            <h5 class="card-title fw-bold">Offboarding</h5>
+                            <p class="card-text text-muted small">
+                                Processus de sortie et révocation d'accès
+                            </p>
+                            <a th:href="@{/rh/offboarding}" class="btn btn-danger btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conformité -->
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card module-card shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="bi bi-shield-check module-icon text-primary"></i>
+                            <h5 class="card-title fw-bold">Conformité</h5>
+                            <p class="card-text text-muted small">
+                                Vérification de conformité légale multi-pays et RGPD
+                            </p>
+                            <a th:href="@{/rh/conformite}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-arrow-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section Tableau de bord -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-speedometer2"></i> Tableau de bord RH
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <p class="mb-2">
+                                        Accédez au tableau de bord complet pour une vue d'ensemble de toutes les activités RH.
+                                    </p>
+                                    <ul class="list-unstyled mb-0">
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Statistiques en temps réel</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Graphiques et analyses</li>
+                                        <li><i class="bi bi-check-circle text-success me-2"></i> Alertes et notifications</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                    <a th:href="@{/rh/dashboard}" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-speedometer2"></i> Voir le tableau de bord
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

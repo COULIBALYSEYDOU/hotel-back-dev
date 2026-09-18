@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- Titre dynamique -->
+    <title th:text="${pageTitle != null ? pageTitle + ' - Module RH' : 'Module RH'}">Module RH</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" 
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- CSS personnalisé RH -->
+    <style>
+        /* Variables CSS - Design System */
+        :root {
+            /* Couleurs principales */
+            --primary: #0d6efd;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #0dcaf0;
+            --secondary: #6c757d;
+            --dark: #212529;
+            --light: #f8f9fa;
+            
+            /* Couleurs statuts employé */
+            --actif: #198754;
+            --inactif: #6c757d;
+            --en-conge: #0dcaf0;
+            --periode-essai: #ffc107;
+            
+            /* Couleurs statuts congé */
+            --approuve: #198754;
+            --en-attente: #ffc107;
+            --rejete: #dc3545;
+            --en-cours: #0dcaf0;
+            
+            /* Typographie */
+            --font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --font-size-base: 1rem;
+            --font-size-sm: 0.875rem;
+            --font-size-lg: 1.125rem;
+            
+            /* Espacements */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-xxl: 3rem;
+        }
+        
+        /* Styles globaux */
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Main content */
+        main {
+            flex: 1;
+            padding-top: var(--spacing-xl);
+            padding-bottom: var(--spacing-xl);
+        }
+        
+        /* Cards avec ombre */
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            transition: box-shadow 0.15s ease-in-out;
+        }
+        
+        .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Badges statuts */
+        .badge-actif {
+            background-color: var(--actif);
+        }
+        
+        .badge-inactif {
+            background-color: var(--inactif);
+        }
+        
+        .badge-en-conge {
+            background-color: var(--en-conge);
+        }
+        
+        .badge-periode-essai {
+            background-color: var(--periode-essai);
+        }
+        
+        .badge-approuve {
+            background-color: var(--approuve);
+        }
+        
+        .badge-en-attente {
+            background-color: var(--en-attente);
+        }
+        
+        .badge-rejete {
+            background-color: var(--rejete);
+        }
+        
+        .badge-en-cours {
+            background-color: var(--en-cours);
+        }
+        
+        /* Tables */
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.025);
+        }
+        
+        /* Boutons avec icônes */
+        .btn i {
+            margin-right: 0.25rem;
+        }
+        
+        /* Loading spinner */
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15em;
+        }
+        
+        /* Responsive utilities */
+        @media (max-width: 768px) {
+            .table-responsive {
+                font-size: var(--font-size-sm);
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+    
+    <!-- CSS personnalisé additionnel (injecté par les pages enfants) -->
+    <th:block layout:fragment="customCss"></th:block>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav th:replace="~{rh/layout/navbar :: navbar}"></nav>
+    
+    <!-- Contenu principal -->
+    <main class="container-fluid">
+        <!-- Breadcrumb (injecté par les pages enfants) -->
+        <th:block layout:fragment="breadcrumb"></th:block>
+        
+        <!-- Contenu de la page (injecté par les pages enfants) -->
+        <th:block layout:fragment="content">
+            <!-- Contenu par défaut si non défini -->
+            <div class="container py-4">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Contenu non défini
+                </div>
+            </div>
+        </th:block>
+    </main>
+    
+    <!-- Footer -->
+    <footer th:replace="~{rh/layout/footer :: footer}"></footer>
+    
+    <!-- Toast notifications container -->
+    <div th:replace="~{rh/components/toast :: toast-container}"></div>
+    
+    <!-- Modal confirmation container (injecté si nécessaire) -->
+    <th:block layout:fragment="modals"></th:block>
+    
+    <!-- Bootstrap 5.3 JS Bundle (Popper inclus) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" 
+            crossorigin="anonymous"></script>
+    
+    <!-- Scripts utilitaires globaux -->
+    <script>
+        // Fonction utilitaire pour afficher des toasts
+        function showToast(type, title, message) {
+            const toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) return;
+            
+            const toastId = 'toast-' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+                    <div class="toast-header bg-${type} text-white">
+                        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                        <strong class="me-auto ms-2">${title}</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            // Nettoyer après fermeture
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastElement.remove();
+            });
+        }
+        
+        // Fonction utilitaire pour confirmer une suppression
+        function confirmDelete(message, url) {
+            if (!message) message = 'Êtes-vous sûr de vouloir supprimer cet élément ?';
+            if (confirm(message)) {
+                if (url) {
+                    window.location.href = url;
+                } else {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // Initialisation des tooltips Bootstrap
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Initialisation des popovers Bootstrap
+            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            popoverTriggerList.map(function(popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+        
+        // Gestion des messages flash depuis le serveur
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier s'il y a des messages dans les attributs Thymeleaf
+            // Cette partie sera complétée par les pages enfants si nécessaire
+        });
+    </script>
+    
+    <!-- JavaScript personnalisé additionnel (injecté par les pages enfants) -->
+    <th:block layout:fragment="customJs"></th:block>
+</body>
+</html>

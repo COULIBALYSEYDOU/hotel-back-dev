@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails Recrutement</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/recrutements}"><i class="bi bi-person-badge"></i> Recrutements</a></li>
+                <li class="breadcrumb-item active">Détails</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1"><i class="bi bi-person-badge text-primary"></i> <span th:text="${recrutement.poste}">Poste</span></h1>
+                <p class="text-muted mb-0" th:text="${recrutement.departement != null ? 'Département: ' + recrutement.departement : ''}">Département</p>
+            </div>
+            <div>
+                <a th:href="@{/rh/recrutements/{uuid}/edit(uuid=${recrutement.uuid})}" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                <a th:href="@{/rh/recrutements}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Poste:</strong> <span th:text="${recrutement.poste}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Département:</strong> <span th:text="${recrutement.departement != null ? recrutement.departement : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Statut:</strong>
+                                <span class="badge bg-success" th:if="${recrutement.statut == 'OUVERT'}">Ouvert</span>
+                                <span class="badge bg-primary" th:if="${recrutement.statut == 'EN_COURS'}">En cours</span>
+                                <span class="badge bg-secondary" th:if="${recrutement.statut == 'CLOS'}">Clos</span>
+                                <span class="badge bg-danger" th:if="${recrutement.statut == 'ANNULE'}">Annulé</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Date publication:</strong> 
+                                <span th:text="${recrutement.datePublication != null ? #temporals.format(recrutement.datePublication, 'dd/MM/yyyy') : '-'}">-</span>
+                            </div>
+                            <div class="col-12 mb-3" th:if="${recrutement.description != null}">
+                                <strong>Description:</strong>
+                                <div th:text="${recrutement.description}">Description</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <strong>Nombre de candidats:</strong>
+                            <div th:text="${recrutement.nombreCandidats != null ? recrutement.nombreCandidats : '0'}">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

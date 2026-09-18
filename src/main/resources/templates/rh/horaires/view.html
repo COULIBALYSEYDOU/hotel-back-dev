@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails Horaire</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/horaires}"><i class="bi bi-clock"></i> Horaires</a></li>
+                <li class="breadcrumb-item active">Détails</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1"><i class="bi bi-clock text-primary"></i> Horaire</h1>
+                <p class="text-muted mb-0" th:text="${horaire.employeNom != null ? 'Employé: ' + horaire.employeNom : ''}">Employé</p>
+            </div>
+            <div>
+                <a th:href="@{/rh/horaires/{uuid}/edit(uuid=${horaire.uuid})}" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                <a th:href="@{/rh/horaires}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Employé:</strong> <span th:text="${horaire.employeNom}">N/A</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Date:</strong> 
+                                <span th:text="${horaire.date != null ? #temporals.format(horaire.date, 'dd/MM/yyyy') : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Heure début:</strong> <span th:text="${horaire.heureDebut != null ? horaire.heureDebut : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Heure fin:</strong> <span th:text="${horaire.heureFin != null ? horaire.heureFin : '-'}">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

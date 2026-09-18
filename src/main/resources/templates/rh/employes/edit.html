@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${employe.nom + ' ' + employe.prenom + ' - Modifier'}">Modifier Employé</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .form-section {
+                margin-bottom: 2rem;
+            }
+            
+            .section-header {
+                background-color: var(--light);
+                padding: 1rem;
+                border-left: 4px solid var(--primary);
+                margin-bottom: 1.5rem;
+            }
+            
+            .required-field::after {
+                content: " *";
+                color: var(--danger);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh/employes}">
+                        <i class="bi bi-people"></i> Employés
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh/employes/{uuid}(uuid=${employe.uuid})}">
+                        <span th:text="${employe.nom + ' ' + employe.prenom}">Nom Prénom</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Modifier
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-1">
+                            <i class="bi bi-pencil text-primary"></i> Modifier l'employé
+                        </h1>
+                        <p class="text-muted mb-0" th:text="'Modification de ' + ${employe.nom} + ' ' + ${employe.prenom}">Modification</p>
+                    </div>
+                    <div>
+                        <a th:href="@{/rh/employes/{uuid}(uuid=${employe.uuid})}" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-eye"></i> Voir
+                        </a>
+                        <a th:href="@{/rh/employes}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Formulaire -->
+                <form th:action="@{/rh/employes/{uuid}(uuid=${employe.uuid})}" 
+                      th:object="${employe}" 
+                      method="post" 
+                      novalidate
+                      id="editEmployeForm">
+                    
+                    <!-- Token CSRF et méthode PUT -->
+                    <input type="hidden" name="_method" value="PUT" th:if="${_csrf != null}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf != null}">
+                    
+                    <!-- Onglets pour organiser le formulaire -->
+                    <ul class="nav nav-tabs mb-4" id="formTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="identite-tab" data-bs-toggle="tab" data-bs-target="#identite" type="button" role="tab">
+                                <i class="bi bi-person"></i> Identité
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="professionnel-tab" data-bs-toggle="tab" data-bs-target="#professionnel" type="button" role="tab">
+                                <i class="bi bi-briefcase"></i> Professionnel
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab">
+                                <i class="bi bi-telephone"></i> Contact
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">
+                                <i class="bi bi-file-earmark"></i> Documents
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="remuneration-tab" data-bs-toggle="tab" data-bs-target="#remuneration" type="button" role="tab">
+                                <i class="bi bi-cash-stack"></i> Rémunération
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="avance-tab" data-bs-toggle="tab" data-bs-target="#avance" type="button" role="tab">
+                                <i class="bi bi-gear"></i> Avancé
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Contenu des onglets -->
+                    <div class="tab-content" id="formTabsContent">
+                        <!-- Onglet Identité -->
+                        <div class="tab-pane fade show active" id="identite" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-person"></i> Informations d'Identité</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="matricule" class="form-label required-field">Matricule</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   th:classappend="${#fields.hasErrors('matricule')} ? 'is-invalid' : ''"
+                                                   id="matricule" 
+                                                   th:field="*{matricule}" 
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('matricule')}" 
+                                                 th:errors="*{matricule}"></div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nom" class="form-label required-field">Nom</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid' : ''"
+                                                   id="nom" 
+                                                   th:field="*{nom}" 
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nom')}" 
+                                                 th:errors="*{nom}"></div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="prenom" class="form-label required-field">Prénom</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   th:classappend="${#fields.hasErrors('prenom')} ? 'is-invalid' : ''"
+                                                   id="prenom" 
+                                                   th:field="*{prenom}" 
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('prenom')}" 
+                                                 th:errors="*{prenom}"></div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nomUsuel" class="form-label">Nom usuel</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nomUsuel" 
+                                                   th:field="*{nomUsuel}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dateNaissance" class="form-label">Date de naissance</label>
+                                            <input type="date" 
+                                                   class="form-control" 
+                                                   th:classappend="${#fields.hasErrors('dateNaissance')} ? 'is-invalid' : ''"
+                                                   id="dateNaissance" 
+                                                   th:field="*{dateNaissance}">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dateNaissance')}" 
+                                                 th:errors="*{dateNaissance}"></div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="lieuNaissance" class="form-label">Lieu de naissance</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="lieuNaissance" 
+                                                   th:field="*{lieuNaissance}">
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <label for="sexe" class="form-label">Sexe</label>
+                                            <select class="form-select" id="sexe" th:field="*{sexe}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="M">Masculin</option>
+                                                <option value="F">Féminin</option>
+                                                <option value="AUTRE">Autre</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <label for="civilite" class="form-label">Civilité</label>
+                                            <select class="form-select" id="civilite" th:field="*{civilite}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="M">Monsieur</option>
+                                                <option value="MME">Madame</option>
+                                                <option value="MLLE">Mademoiselle</option>
+                                                <option value="DR">Docteur</option>
+                                                <option value="PROF">Professeur</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <label for="etatCivil" class="form-label">État civil</label>
+                                            <select class="form-select" id="etatCivil" th:field="*{etatCivil}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="CELIBATAIRE">Célibataire</option>
+                                                <option value="MARIE">Marié(e)</option>
+                                                <option value="DIVORCE">Divorcé(e)</option>
+                                                <option value="VEUF">Veuf(ve)</option>
+                                                <option value="CONCUBINAGE">Concubinage</option>
+                                                <option value="PACS">PACS</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nationaliteCode" class="form-label">Nationalité (Code ISO)</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nationaliteCode" 
+                                                   th:field="*{nationaliteCode}"
+                                                   placeholder="FRA, CMR, etc."
+                                                   maxlength="3">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nationalite" class="form-label">Nationalité</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nationalite" 
+                                                   th:field="*{nationalite}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Adresse</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <label for="adresse" class="form-label">Adresse</label>
+                                            <textarea class="form-control" 
+                                                      id="adresse" 
+                                                      th:field="*{adresse}" 
+                                                      rows="2"></textarea>
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <label for="ville" class="form-label">Ville</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="ville" 
+                                                   th:field="*{ville}">
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <label for="codePostal" class="form-label">Code postal</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="codePostal" 
+                                                   th:field="*{codePostal}">
+                                        </div>
+                                        
+                                        <div class="col-md-4 mb-3">
+                                            <label for="region" class="form-label">Région</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="region" 
+                                                   th:field="*{region}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="paysResidenceCode" class="form-label">Pays de résidence (Code ISO)</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="paysResidenceCode" 
+                                                   th:field="*{paysResidenceCode}"
+                                                   placeholder="FRA, CMR, etc."
+                                                   maxlength="3">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="paysResidence" class="form-label">Pays de résidence</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="paysResidence" 
+                                                   th:field="*{paysResidence}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet Professionnel -->
+                        <div class="tab-pane fade" id="professionnel" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-briefcase"></i> Informations Professionnelles</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="poste" class="form-label required-field">Poste</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   th:classappend="${#fields.hasErrors('poste')} ? 'is-invalid' : ''"
+                                                   id="poste" 
+                                                   th:field="*{poste}" 
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('poste')}" 
+                                                 th:errors="*{poste}"></div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="departement" class="form-label">Département</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="departement" 
+                                                   th:field="*{departement}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="service" class="form-label">Service</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="service" 
+                                                   th:field="*{service}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="direction" class="form-label">Direction</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="direction" 
+                                                   th:field="*{direction}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="niveauHierarchique" class="form-label">Niveau hiérarchique</label>
+                                            <select class="form-select" id="niveauHierarchique" th:field="*{niveauHierarchique}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="CADRE">Cadre</option>
+                                                <option value="AGENT">Agent</option>
+                                                <option value="MANAGER">Manager</option>
+                                                <option value="DIRECTEUR">Directeur</option>
+                                                <option value="DG">Directeur Général</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="categorieProfessionnelle" class="form-label">Catégorie professionnelle</label>
+                                            <select class="form-select" id="categorieProfessionnelle" th:field="*{categorieProfessionnelle}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="CATEGORIE_A">Catégorie A</option>
+                                                <option value="CATEGORIE_B">Catégorie B</option>
+                                                <option value="CATEGORIE_C">Catégorie C</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dateEmbauche" class="form-label">Date d'embauche</label>
+                                            <input type="date" 
+                                                   class="form-control" 
+                                                   th:classappend="${#fields.hasErrors('dateEmbauche')} ? 'is-invalid' : ''"
+                                                   id="dateEmbauche" 
+                                                   th:field="*{dateEmbauche}">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dateEmbauche')}" 
+                                                 th:errors="*{dateEmbauche}"></div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dateFinContrat" class="form-label">Date fin contrat</label>
+                                            <input type="date" 
+                                                   class="form-control" 
+                                                   id="dateFinContrat" 
+                                                   th:field="*{dateFinContrat}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="typeContrat" class="form-label">Type de contrat</label>
+                                            <select class="form-select" id="typeContrat" th:field="*{typeContrat}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="CDI">CDI</option>
+                                                <option value="CDD">CDD</option>
+                                                <option value="STAGE">Stage</option>
+                                                <option value="INTERIM">Intérim</option>
+                                                <option value="FREELANCE">Freelance</option>
+                                                <option value="CONSULTANT">Consultant</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="regimeTravail" class="form-label">Régime de travail</label>
+                                            <select class="form-select" id="regimeTravail" th:field="*{regimeTravail}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="TEMPS_PLEIN">Temps plein</option>
+                                                <option value="TEMPS_PARTIEL">Temps partiel</option>
+                                                <option value="HORAIRE_FLEXIBLE">Horaire flexible</option>
+                                                <option value="TELETRAVAIL">Télétravail</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="tauxTravail" class="form-label">Taux de travail (%)</label>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="tauxTravail" 
+                                                   th:field="*{tauxTravail}"
+                                                   min="0" 
+                                                   max="100" 
+                                                   step="0.01">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="statutEmploye" class="form-label">Statut employé</label>
+                                            <select class="form-select" id="statutEmploye" th:field="*{statutEmploye}">
+                                                <option value="ACTIF">Actif</option>
+                                                <option value="PERIODE_ESSAI">Période d'essai</option>
+                                                <option value="EN_CONGE_PROLONGE">En congé prolongé</option>
+                                                <option value="SUSPENDU">Suspendu</option>
+                                                <option value="INACTIF">Inactif</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="managerId" class="form-label">Manager ID</label>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="managerId" 
+                                                   th:field="*{managerId}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="responsableRhId" class="form-label">Responsable RH ID</label>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="responsableRhId" 
+                                                   th:field="*{responsableRhId}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet Contact -->
+                        <div class="tab-pane fade" id="contact" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-telephone"></i> Coordonnées</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" 
+                                                   class="form-control" 
+                                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                                   id="email" 
+                                                   th:field="*{email}">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" 
+                                                 th:errors="*{email}"></div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="telephone" class="form-label">Téléphone</label>
+                                            <input type="tel" 
+                                                   class="form-control" 
+                                                   id="telephone" 
+                                                   th:field="*{telephone}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="telephoneSecondaire" class="form-label">Téléphone secondaire</label>
+                                            <input type="tel" 
+                                                   class="form-control" 
+                                                   id="telephoneSecondaire" 
+                                                   th:field="*{telephoneSecondaire}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="whatsapp" class="form-label">WhatsApp</label>
+                                            <input type="tel" 
+                                                   class="form-control" 
+                                                   id="whatsapp" 
+                                                   th:field="*{whatsapp}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="linkedin" class="form-label">LinkedIn</label>
+                                            <input type="url" 
+                                                   class="form-control" 
+                                                   id="linkedin" 
+                                                   th:field="*{linkedin}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-person-heart"></i> Contacts d'urgence</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="contactUrgenceNom" class="form-label">Nom contact urgence 1</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="contactUrgenceNom" 
+                                                   th:field="*{contactUrgenceNom}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="contactUrgenceTelephone" class="form-label">Téléphone contact urgence 1</label>
+                                            <input type="tel" 
+                                                   class="form-control" 
+                                                   id="contactUrgenceTelephone" 
+                                                   th:field="*{contactUrgenceTelephone}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="contactUrgence2Nom" class="form-label">Nom contact urgence 2</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="contactUrgence2Nom" 
+                                                   th:field="*{contactUrgence2Nom}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="contactUrgence2Telephone" class="form-label">Téléphone contact urgence 2</label>
+                                            <input type="tel" 
+                                                   class="form-control" 
+                                                   id="contactUrgence2Telephone" 
+                                                   th:field="*{contactUrgence2Telephone}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet Documents -->
+                        <div class="tab-pane fade" id="documents" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Documents Légaux</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="cnpsNumero" class="form-label">Numéro CNPS</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="cnpsNumero" 
+                                                   th:field="*{cnpsNumero}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nif" class="form-label">NIF</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nif" 
+                                                   th:field="*{nif}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="numeroPasseport" class="form-label">Numéro passeport</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="numeroPasseport" 
+                                                   th:field="*{numeroPasseport}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="numeroCarteIdentite" class="form-label">Carte d'identité</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="numeroCarteIdentite" 
+                                                   th:field="*{numeroCarteIdentite}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="numeroPermisConduire" class="form-label">Permis de conduire</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="numeroPermisConduire" 
+                                                   th:field="*{numeroPermisConduire}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="numeroPermisTravail" class="form-label">Permis de travail</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="numeroPermisTravail" 
+                                                   th:field="*{numeroPermisTravail}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dateExpirationPermisTravail" class="form-label">Expiration permis travail</label>
+                                            <input type="date" 
+                                                   class="form-control" 
+                                                   id="dateExpirationPermisTravail" 
+                                                   th:field="*{dateExpirationPermisTravail}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="numeroVisa" class="form-label">Numéro visa</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="numeroVisa" 
+                                                   th:field="*{numeroVisa}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dateExpirationVisa" class="form-label">Expiration visa</label>
+                                            <input type="date" 
+                                                   class="form-control" 
+                                                   id="dateExpirationVisa" 
+                                                   th:field="*{dateExpirationVisa}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="numeroCarteSejour" class="form-label">Carte de séjour</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="numeroCarteSejour" 
+                                                   th:field="*{numeroCarteSejour}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dateExpirationCarteSejour" class="form-label">Expiration carte séjour</label>
+                                            <input type="date" 
+                                                   class="form-control" 
+                                                   id="dateExpirationCarteSejour" 
+                                                   th:field="*{dateExpirationCarteSejour}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-bank"></i> Informations Bancaires</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="banque" class="form-label">Banque</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="banque" 
+                                                   th:field="*{banque}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="rib" class="form-label">RIB</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="rib" 
+                                                   th:field="*{rib}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="iban" class="form-label">IBAN</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="iban" 
+                                                   th:field="*{iban}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="bic" class="form-label">BIC</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="bic" 
+                                                   th:field="*{bic}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="deviseCompte" class="form-label">Devise du compte</label>
+                                            <select class="form-select" id="deviseCompte" th:field="*{deviseCompte}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="EUR">EUR</option>
+                                                <option value="USD">USD</option>
+                                                <option value="XAF">XAF</option>
+                                                <option value="XOF">XOF</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet Rémunération -->
+                        <div class="tab-pane fade" id="remuneration" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-cash-stack"></i> Rémunération</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="salaireBase" class="form-label">Salaire de base</label>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   th:classappend="${#fields.hasErrors('salaireBase')} ? 'is-invalid' : ''"
+                                                   id="salaireBase" 
+                                                   th:field="*{salaireBase}"
+                                                   step="0.01" 
+                                                   min="0">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('salaireBase')}" 
+                                                 th:errors="*{salaireBase}"></div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="deviseSalaire" class="form-label">Devise</label>
+                                            <select class="form-select" id="deviseSalaire" th:field="*{deviseSalaire}">
+                                                <option value="EUR">EUR</option>
+                                                <option value="USD">USD</option>
+                                                <option value="XAF">XAF</option>
+                                                <option value="XOF">XOF</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="tauxHoraire" class="form-label">Taux horaire</label>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="tauxHoraire" 
+                                                   th:field="*{tauxHoraire}"
+                                                   step="0.01" 
+                                                   min="0">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="periodicitePaie" class="form-label">Périodicité de paie</label>
+                                            <select class="form-select" id="periodicitePaie" th:field="*{periodicitePaie}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="MENSUEL">Mensuel</option>
+                                                <option value="QUINZAINE">Quinzaine</option>
+                                                <option value="HEBDOMADAIRE">Hebdomadaire</option>
+                                                <option value="JOURNALIER">Journalier</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="heuresHebdomadaires" class="form-label">Heures hebdomadaires</label>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="heuresHebdomadaires" 
+                                                   th:field="*{heuresHebdomadaires}"
+                                                   step="0.01" 
+                                                   min="0" 
+                                                   max="60">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="heuresMensuelles" class="form-label">Heures mensuelles</label>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="heuresMensuelles" 
+                                                   th:field="*{heuresMensuelles}"
+                                                   step="0.01" 
+                                                   min="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglet Avancé -->
+                        <div class="tab-pane fade" id="avance" role="tabpanel">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0"><i class="bi bi-gear"></i> Paramètres Avancés</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="fuseauHoraire" class="form-label">Fuseau horaire</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="fuseauHoraire" 
+                                                   th:field="*{fuseauHoraire}"
+                                                   placeholder="Europe/Paris">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="niveauAcces" class="form-label">Niveau d'accès</label>
+                                            <select class="form-select" id="niveauAcces" th:field="*{niveauAcces}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="STANDARD">Standard</option>
+                                                <option value="ELEVE">Élevé</option>
+                                                <option value="ADMIN">Administrateur</option>
+                                                <option value="SUPER_ADMIN">Super Administrateur</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       id="accesSystemeAutorise" 
+                                                       th:field="*{accesSystemeAutorise}">
+                                                <label class="form-check-label" for="accesSystemeAutorise">
+                                                    Accès système autorisé
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       id="teletravailAutorise" 
+                                                       th:field="*{teletravailAutorise}">
+                                                <label class="form-check-label" for="teletravailAutorise">
+                                                    Télétravail autorisé
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="pourcentageTeletravail" class="form-label">Pourcentage télétravail (%)</label>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="pourcentageTeletravail" 
+                                                   th:field="*{pourcentageTeletravail}"
+                                                   min="0" 
+                                                   max="100" 
+                                                   step="0.01">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dateDebutAcces" class="form-label">Date début accès</label>
+                                            <input type="date" 
+                                                   class="form-control" 
+                                                   id="dateDebutAcces" 
+                                                   th:field="*{dateDebutAcces}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dateFinAcces" class="form-label">Date fin accès</label>
+                                            <input type="date" 
+                                                   class="form-control" 
+                                                   id="dateFinAcces" 
+                                                   th:field="*{dateFinAcces}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       id="rgpdApplicable" 
+                                                       th:field="*{rgpdApplicable}">
+                                                <label class="form-check-label" for="rgpdApplicable">
+                                                    RGPD applicable
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="baseLegale" class="form-label">Base légale RGPD</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="baseLegale" 
+                                                   th:field="*{baseLegale}">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="retention" class="form-label">Durée de rétention</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="retention" 
+                                                   th:field="*{retention}"
+                                                   placeholder="Ex: 5 ans">
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       id="consentementDonnees" 
+                                                       th:field="*{consentementDonnees}">
+                                                <label class="form-check-label" for="consentementDonnees">
+                                                    Consentement données
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="regimeFiscal" class="form-label">Régime fiscal</label>
+                                            <select class="form-select" id="regimeFiscal" th:field="*{regimeFiscal}">
+                                                <option value="">-- Sélectionner --</option>
+                                                <option value="RESIDENT">Résident</option>
+                                                <option value="NON_RESIDENT">Non résident</option>
+                                                <option value="EXONERE">Exonéré</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="paysFiscal" class="form-label">Pays fiscal</label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="paysFiscal" 
+                                                   th:field="*{paysFiscal}">
+                                        </div>
+                                        
+                                        <div class="col-12 mb-3">
+                                            <label for="notesInternes" class="form-label">Notes internes</label>
+                                            <textarea class="form-control" 
+                                                      id="notesInternes" 
+                                                      th:field="*{notesInternes}" 
+                                                      rows="4"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Boutons d'action -->
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/rh/employes/{uuid}(uuid=${employe.uuid})}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </a>
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary me-2" onclick="saveDraft()">
+                                        <i class="bi bi-save"></i> Enregistrer brouillon
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle"></i> Mettre à jour
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            // Validation Bootstrap
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('form[novalidate]')
+                Array.prototype.slice.call(forms).forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+            })()
+            
+            // Sauvegarder brouillon (à implémenter)
+            function saveDraft() {
+                // TODO: Implémenter la sauvegarde de brouillon
+                alert('Fonctionnalité de brouillon à implémenter');
+            }
+        </script>
+    </th:block>
+</body>
+</html>

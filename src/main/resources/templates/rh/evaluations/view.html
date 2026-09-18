@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails Évaluation</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/evaluations}"><i class="bi bi-graph-up-arrow"></i> Évaluations</a></li>
+                <li class="breadcrumb-item active">Détails</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1"><i class="bi bi-graph-up-arrow text-primary"></i> Évaluation</h1>
+                <p class="text-muted mb-0" th:text="${evaluation.employeNom != null ? 'Employé: ' + evaluation.employeNom : ''}">Employé</p>
+            </div>
+            <div>
+                <a th:href="@{/rh/evaluations/{uuid}/edit(uuid=${evaluation.uuid})}" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                <a th:href="@{/rh/evaluations}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Employé:</strong> <span th:text="${evaluation.employeNom}">N/A</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Date:</strong> 
+                                <span th:text="${evaluation.dateEvaluation != null ? #temporals.format(evaluation.dateEvaluation, 'dd/MM/yyyy') : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Score global:</strong> 
+                                <span class="badge bg-primary fs-6" th:text="${evaluation.scoreGlobal != null ? evaluation.scoreGlobal + '/100' : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Statut:</strong>
+                                <span class="badge bg-warning" th:if="${evaluation.statutEvaluation == 'EN_COURS'}">En cours</span>
+                                <span class="badge bg-success" th:if="${evaluation.statutEvaluation == 'COMPLETE'}">Complète</span>
+                            </div>
+                            <div class="col-12 mb-3" th:if="${evaluation.commentaires != null}">
+                                <strong>Commentaires:</strong>
+                                <div th:text="${evaluation.commentaires}">Commentaires</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <strong>Évaluateur:</strong>
+                            <div th:text="${evaluation.evaluateurNom != null ? evaluation.evaluateurNom : '-'}">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

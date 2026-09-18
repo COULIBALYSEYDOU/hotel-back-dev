@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Formations</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .badge-statut {
+                font-size: 0.875rem;
+                padding: 0.35em 0.65em;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-book"></i> Formations
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <!-- Header avec titre et bouton action -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="bi bi-book text-primary"></i> Liste des Formations
+                </h1>
+                <p class="text-muted mb-0" th:if="${formations != null}">
+                    <span th:text="${formations.totalElements}">0</span> formation(s) au total
+                </p>
+            </div>
+            <div>
+                <a th:href="@{/rh/formations/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nouvelle formation
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filtres et recherche -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/rh/formations}" method="get" class="row g-3">
+                    <!-- Recherche -->
+                    <div class="col-md-3">
+                        <label for="search" class="form-label small">Rechercher</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="search" 
+                                   name="search" 
+                                   th:value="${param.search}" 
+                                   placeholder="Titre, organisme...">
+                        </div>
+                    </div>
+                    
+                    <!-- Filtre par statut -->
+                    <div class="col-md-3">
+                        <label for="statut" class="form-label small">Statut</label>
+                        <select class="form-select" id="statut" name="statut">
+                            <option value="">Tous les statuts</option>
+                            <option value="PLANIFIEE" th:selected="${param.statut == 'PLANIFIEE'}">Planifiée</option>
+                            <option value="EN_COURS" th:selected="${param.statut == 'EN_COURS'}">En cours</option>
+                            <option value="TERMINEE" th:selected="${param.statut == 'TERMINEE'}">Terminée</option>
+                            <option value="ANNULEE" th:selected="${param.statut == 'ANNULEE'}">Annulée</option>
+                            <option value="REPORTEE" th:selected="${param.statut == 'REPORTEE'}">Reportée</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Filtre par type -->
+                    <div class="col-md-3">
+                        <label for="type" class="form-label small">Type</label>
+                        <select class="form-select" id="type" name="type">
+                            <option value="">Tous les types</option>
+                            <option value="INTERNE" th:selected="${param.type == 'INTERNE'}">Interne</option>
+                            <option value="EXTERNE" th:selected="${param.type == 'EXTERNE'}">Externe</option>
+                            <option value="EN_LIGNE" th:selected="${param.type == 'EN_LIGNE'}">En ligne</option>
+                            <option value="PRESENTIEL" th:selected="${param.type == 'PRESENTIEL'}">Présentiel</option>
+                            <option value="HYBRIDE" th:selected="${param.type == 'HYBRIDE'}">Hybride</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Boutons -->
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100 me-2">
+                            <i class="bi bi-search"></i> Filtrer
+                        </button>
+                        <a th:href="@{/rh/formations}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tableau responsive -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul"></i> Résultats
+                </h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    <a th:href="@{/rh/formations(sort='titre', order=${currentSort == 'titre' and currentOrder == 'asc' ? 'desc' : 'asc'}, search=${param.search}, statut=${param.statut}, type=${param.type})}" 
+                                       class="text-decoration-none text-dark">
+                                        Titre
+                                        <i class="bi" 
+                                           th:classappend="${currentSort == 'titre' ? (currentOrder == 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'}"></i>
+                                    </a>
+                                </th>
+                                <th>Organisme</th>
+                                <th>
+                                    <a th:href="@{/rh/formations(sort='dateDebut', order=${currentSort == 'dateDebut' and currentOrder == 'asc' ? 'desc' : 'asc'}, search=${param.search}, statut=${param.statut}, type=${param.type})}" 
+                                       class="text-decoration-none text-dark">
+                                        Période
+                                        <i class="bi" 
+                                           th:classappend="${currentSort == 'dateDebut' ? (currentOrder == 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'}"></i>
+                                    </a>
+                                </th>
+                                <th>Durée</th>
+                                <th>Participants</th>
+                                <th>
+                                    <a th:href="@{/rh/formations(sort='statutFormation', order=${currentSort == 'statutFormation' and currentOrder == 'asc' ? 'desc' : 'asc'}, search=${param.search}, statut=${param.statut}, type=${param.type})}" 
+                                       class="text-decoration-none text-dark">
+                                        Statut
+                                        <i class="bi" 
+                                           th:classappend="${currentSort == 'statutFormation' ? (currentOrder == 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'}"></i>
+                                    </a>
+                                </th>
+                                <th class="text-end table-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="formation : ${formations.content}">
+                                <td>
+                                    <strong th:text="${formation.titre}">Titre formation</strong>
+                                    <br>
+                                    <small class="text-muted" th:text="${formation.typeFormation != null ? formation.typeFormation : ''}">INTERNE</small>
+                                </td>
+                                <td th:text="${formation.organisme != null ? formation.organisme : '-'}">-</td>
+                                <td>
+                                    <div>
+                                        <small th:text="${formation.dateDebut != null ? #temporals.format(formation.dateDebut, 'dd/MM/yyyy') : '-'}">01/01/2024</small>
+                                        <br>
+                                        <small class="text-muted">au</small>
+                                        <br>
+                                        <small th:text="${formation.dateFin != null ? #temporals.format(formation.dateFin, 'dd/MM/yyyy') : '-'}">15/01/2024</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:text="${formation.dureeHeures != null ? formation.dureeHeures + 'h' : '-'}">40h</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info" 
+                                          th:text="${formation.nombreParticipants != null ? formation.nombreParticipants + ' participant(s)' : '0'}">0</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary badge-statut" 
+                                          th:if="${formation.statutFormation == 'PLANIFIEE'}">
+                                        Planifiée
+                                    </span>
+                                    <span class="badge bg-primary badge-statut" 
+                                          th:if="${formation.statutFormation == 'EN_COURS'}">
+                                        En cours
+                                    </span>
+                                    <span class="badge bg-success badge-statut" 
+                                          th:if="${formation.statutFormation == 'TERMINEE'}">
+                                        Terminée
+                                    </span>
+                                    <span class="badge bg-danger badge-statut" 
+                                          th:if="${formation.statutFormation == 'ANNULEE'}">
+                                        Annulée
+                                    </span>
+                                    <span class="badge bg-warning badge-statut" 
+                                          th:if="${formation.statutFormation == 'REPORTEE'}">
+                                        Reportée
+                                    </span>
+                                </td>
+                                <td class="text-end table-actions">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a th:href="@{/rh/formations/{uuid}(uuid=${formation.uuid})}" 
+                                           class="btn btn-outline-primary" 
+                                           title="Voir les détails"
+                                           data-bs-toggle="tooltip">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/rh/formations/{uuid}/edit(uuid=${formation.uuid})}" 
+                                           class="btn btn-outline-warning" 
+                                           title="Modifier"
+                                           data-bs-toggle="tooltip">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button class="btn btn-outline-danger" 
+                                                title="Supprimer"
+                                                data-bs-toggle="tooltip"
+                                                onclick="confirmDelete('${formation.uuid}', '${formation.titre}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Message si vide -->
+                            <tr th:if="${formations == null or #lists.isEmpty(formations.content)}">
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                                    <p class="text-muted mt-3 mb-0">Aucune formation trouvée</p>
+                                    <a th:href="@{/rh/formations/new}" class="btn btn-primary mt-3">
+                                        <i class="bi bi-plus-circle"></i> Créer la première formation
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="card-footer bg-white border-top" th:if="${formations != null and formations.totalPages > 1}">
+                <div th:replace="~{rh/components/pagination :: pagination}"></div>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            // Variables pour la pagination
+            const baseUrl = /*[[@{/rh/formations}]]*/ '/rh/formations';
+            const page = /*[[${formations != null ? formations.number : 0}]]*/ 0;
+            const pageSize = /*[[${formations != null ? formations.size : 20}]]*/ 20;
+            const sort = /*[[${currentSort != null ? currentSort : 'dateDebut'}]]*/ 'dateDebut';
+            const order = /*[[${currentOrder != null ? currentOrder : 'desc'}]]*/ 'desc';
+            
+            // Fonction pour confirmer la suppression
+            function confirmDelete(uuid, titre) {
+                if (confirm('Êtes-vous sûr de vouloir supprimer la formation "' + titre + '" ?\n\nCette action est irréversible.')) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/rh/formations/' + uuid;
+                    
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_method';
+                    csrfInput.value = 'DELETE';
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

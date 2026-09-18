@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle Fiche de Paie</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/fiches-paie}"><i class="bi bi-cash-stack"></i> Fiches de Paie</a></li>
+                <li class="breadcrumb-item active">Nouvelle fiche</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-1"><i class="bi bi-cash-stack text-primary"></i> Nouvelle Fiche de Paie</h1>
+                        <p class="text-muted mb-0">Remplissez le formulaire pour créer une nouvelle fiche de paie</p>
+                    </div>
+                    <a th:href="@{/rh/fiches-paie}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </a>
+                </div>
+                
+                <form th:action="@{/rh/fiches-paie}" th:object="${fiche}" method="post" novalidate>
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="employeId" class="form-label">Employé <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="employeId" th:field="*{employeId}" required>
+                                        <option value="">-- Sélectionner --</option>
+                                        <option th:each="emp : ${employes}" th:value="${emp.id}" th:text="${emp.nom + ' ' + emp.prenom}">Employé</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="mois" class="form-label">Mois <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="mois" th:field="*{mois}" min="1" max="12" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="annee" class="form-label">Année <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="annee" th:field="*{annee}" min="2000" max="2100" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="salaireBrut" class="form-label">Salaire brut</label>
+                                    <input type="number" class="form-control" id="salaireBrut" th:field="*{salaireBrut}" step="0.01" min="0">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="netAPayer" class="form-label">Net à payer</label>
+                                    <input type="number" class="form-control" id="netAPayer" th:field="*{netAPayer}" step="0.01" min="0">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="statutPaie" class="form-label">Statut</label>
+                                    <select class="form-select" id="statutPaie" th:field="*{statutPaie}">
+                                        <option value="BROUILLON">Brouillon</option>
+                                        <option value="VALIDE">Validé</option>
+                                        <option value="PAYE">Payé</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="devise" class="form-label">Devise</label>
+                                    <select class="form-select" id="devise" th:field="*{devise}">
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                        <option value="XAF">XAF</option>
+                                        <option value="XOF">XOF</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/rh/fiches-paie}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Créer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

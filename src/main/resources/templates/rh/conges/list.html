@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Congés</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .badge-statut {
+                font-size: 0.875rem;
+                padding: 0.35em 0.65em;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-calendar-check"></i> Congés
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <!-- Header avec titre et bouton action -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="bi bi-calendar-check text-primary"></i> Liste des Congés
+                </h1>
+                <p class="text-muted mb-0" th:if="${conges != null}">
+                    <span th:text="${conges.totalElements}">0</span> congé(s) au total
+                </p>
+            </div>
+            <div>
+                <a th:href="@{/rh/conges/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nouvelle demande
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filtres et recherche -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/rh/conges}" method="get" class="row g-3">
+                    <!-- Recherche -->
+                    <div class="col-md-3">
+                        <label for="search" class="form-label small">Rechercher</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="search" 
+                                   name="search" 
+                                   th:value="${param.search}" 
+                                   placeholder="Employé, type...">
+                        </div>
+                    </div>
+                    
+                    <!-- Filtre par statut -->
+                    <div class="col-md-3">
+                        <label for="statut" class="form-label small">Statut</label>
+                        <select class="form-select" id="statut" name="statut">
+                            <option value="">Tous les statuts</option>
+                            <option value="EN_ATTENTE" th:selected="${param.statut == 'EN_ATTENTE'}">En attente</option>
+                            <option value="EN_VALIDATION" th:selected="${param.statut == 'EN_VALIDATION'}">En validation</option>
+                            <option value="APPROUVE" th:selected="${param.statut == 'APPROUVE'}">Approuvé</option>
+                            <option value="REJETE" th:selected="${param.statut == 'REJETE'}">Rejeté</option>
+                            <option value="EN_COURS" th:selected="${param.statut == 'EN_COURS'}">En cours</option>
+                            <option value="TERMINE" th:selected="${param.statut == 'TERMINE'}">Terminé</option>
+                            <option value="ANNULE" th:selected="${param.statut == 'ANNULE'}">Annulé</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Filtre par type -->
+                    <div class="col-md-3">
+                        <label for="type" class="form-label small">Type de congé</label>
+                        <select class="form-select" id="type" name="type">
+                            <option value="">Tous les types</option>
+                            <option value="ANNUEL" th:selected="${param.type == 'ANNUEL'}">Annuel</option>
+                            <option value="MALADIE" th:selected="${param.type == 'MALADIE'}">Maladie</option>
+                            <option value="MATERNITE" th:selected="${param.type == 'MATERNITE'}">Maternité</option>
+                            <option value="PATERNITE" th:selected="${param.type == 'PATERNITE'}">Paternité</option>
+                            <option value="SANS_SOLDE" th:selected="${param.type == 'SANS_SOLDE'}">Sans solde</option>
+                            <option value="RTT" th:selected="${param.type == 'RTT'}">RTT</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Boutons -->
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100 me-2">
+                            <i class="bi bi-search"></i> Filtrer
+                        </button>
+                        <a th:href="@{/rh/conges}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tableau responsive -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul"></i> Résultats
+                </h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Employé</th>
+                                <th>
+                                    <a th:href="@{/rh/conges(sort='typeConge', order=${currentSort == 'typeConge' and currentOrder == 'asc' ? 'desc' : 'asc'}, search=${param.search}, statut=${param.statut}, type=${param.type})}" 
+                                       class="text-decoration-none text-dark">
+                                        Type
+                                        <i class="bi" 
+                                           th:classappend="${currentSort == 'typeConge' ? (currentOrder == 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'}"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a th:href="@{/rh/conges(sort='dateDebut', order=${currentSort == 'dateDebut' and currentOrder == 'asc' ? 'desc' : 'asc'}, search=${param.search}, statut=${param.statut}, type=${param.type})}" 
+                                       class="text-decoration-none text-dark">
+                                        Période
+                                        <i class="bi" 
+                                           th:classappend="${currentSort == 'dateDebut' ? (currentOrder == 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'}"></i>
+                                    </a>
+                                </th>
+                                <th>Jours</th>
+                                <th>
+                                    <a th:href="@{/rh/conges(sort='statutConge', order=${currentSort == 'statutConge' and currentOrder == 'asc' ? 'desc' : 'asc'}, search=${param.search}, statut=${param.statut}, type=${param.type})}" 
+                                       class="text-decoration-none text-dark">
+                                        Statut
+                                        <i class="bi" 
+                                           th:classappend="${currentSort == 'statutConge' ? (currentOrder == 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'}"></i>
+                                    </a>
+                                </th>
+                                <th>Approbation</th>
+                                <th class="text-end table-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="conge : ${conges.content}">
+                                <td>
+                                    <div>
+                                        <strong th:text="${conge.employeNom != null ? conge.employeNom : 'N/A'}">N/A</strong>
+                                        <br>
+                                        <small class="text-muted" th:text="${conge.employeMatricule != null ? conge.employeMatricule : ''}">MAT001</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info badge-statut" th:text="${conge.typeConge}">ANNUEL</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <small th:text="${#temporals.format(conge.dateDebut, 'dd/MM/yyyy')}">01/01/2024</small>
+                                        <br>
+                                        <small class="text-muted">au</small>
+                                        <br>
+                                        <small th:text="${#temporals.format(conge.dateFin, 'dd/MM/yyyy')}">15/01/2024</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong th:text="${conge.nombreJours != null ? conge.nombreJours + ' jours' : '-'}">15 jours</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning badge-statut" 
+                                          th:if="${conge.statutConge == 'EN_ATTENTE'}">
+                                        En attente
+                                    </span>
+                                    <span class="badge bg-info badge-statut" 
+                                          th:if="${conge.statutConge == 'EN_VALIDATION'}">
+                                        En validation
+                                    </span>
+                                    <span class="badge bg-success badge-statut" 
+                                          th:if="${conge.statutConge == 'APPROUVE'}">
+                                        Approuvé
+                                    </span>
+                                    <span class="badge bg-danger badge-statut" 
+                                          th:if="${conge.statutConge == 'REJETE'}">
+                                        Rejeté
+                                    </span>
+                                    <span class="badge bg-primary badge-statut" 
+                                          th:if="${conge.statutConge == 'EN_COURS'}">
+                                        En cours
+                                    </span>
+                                    <span class="badge bg-secondary badge-statut" 
+                                          th:if="${conge.statutConge == 'TERMINE'}">
+                                        Terminé
+                                    </span>
+                                    <span class="badge bg-dark badge-statut" 
+                                          th:if="${conge.statutConge == 'ANNULE'}">
+                                        Annulé
+                                    </span>
+                                </td>
+                                <td>
+                                    <div th:if="${conge.approuvePar != null}">
+                                        <small class="text-muted">Par:</small>
+                                        <br>
+                                        <small th:text="${conge.approuveParNom != null ? conge.approuveParNom : 'N/A'}">N/A</small>
+                                        <br>
+                                        <small class="text-muted" th:if="${conge.dateApprobation != null}" 
+                                               th:text="${#temporals.format(conge.dateApprobation, 'dd/MM/yyyy')}">01/01/2024</small>
+                                    </div>
+                                    <span th:unless="${conge.approuvePar != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end table-actions">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a th:href="@{/rh/conges/{uuid}(uuid=${conge.uuid})}" 
+                                           class="btn btn-outline-primary" 
+                                           title="Voir les détails"
+                                           data-bs-toggle="tooltip">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/rh/conges/{uuid}/edit(uuid=${conge.uuid})}" 
+                                           class="btn btn-outline-warning" 
+                                           title="Modifier"
+                                           data-bs-toggle="tooltip"
+                                           th:if="${conge.peutEtreModifie()}">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button class="btn btn-outline-success" 
+                                                title="Approuver"
+                                                data-bs-toggle="tooltip"
+                                                th:if="${conge.necessiteValidation()}"
+                                                onclick="approveConge('${conge.uuid}')">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" 
+                                                title="Rejeter"
+                                                data-bs-toggle="tooltip"
+                                                th:if="${conge.necessiteValidation()}"
+                                                onclick="rejectConge('${conge.uuid}')">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" 
+                                                title="Supprimer"
+                                                data-bs-toggle="tooltip"
+                                                onclick="confirmDelete('${conge.uuid}', '${conge.employeNom}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Message si vide -->
+                            <tr th:if="${conges == null or #lists.isEmpty(conges.content)}">
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                                    <p class="text-muted mt-3 mb-0">Aucun congé trouvé</p>
+                                    <a th:href="@{/rh/conges/new}" class="btn btn-primary mt-3">
+                                        <i class="bi bi-plus-circle"></i> Créer la première demande
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="card-footer bg-white border-top" th:if="${conges != null and conges.totalPages > 1}">
+                <div th:replace="~{rh/components/pagination :: pagination}"></div>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            // Variables pour la pagination
+            const baseUrl = /*[[@{/rh/conges}]]*/ '/rh/conges';
+            const page = /*[[${conges != null ? conges.number : 0}]]*/ 0;
+            const pageSize = /*[[${conges != null ? conges.size : 20}]]*/ 20;
+            const sort = /*[[${currentSort != null ? currentSort : 'dateDebut'}]]*/ 'dateDebut';
+            const order = /*[[${currentOrder != null ? currentOrder : 'desc'}]]*/ 'desc';
+            
+            // Fonction pour approuver un congé
+            function approveConge(uuid) {
+                if (confirm('Êtes-vous sûr de vouloir approuver ce congé ?')) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/rh/conges/' + uuid + '/approve';
+                    
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_method';
+                    csrfInput.value = 'POST';
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+            
+            // Fonction pour rejeter un congé
+            function rejectConge(uuid) {
+                const motif = prompt('Veuillez indiquer le motif du rejet :');
+                if (motif && motif.trim() !== '') {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/rh/conges/' + uuid + '/reject';
+                    
+                    const motifInput = document.createElement('input');
+                    motifInput.type = 'hidden';
+                    motifInput.name = 'motif';
+                    motifInput.value = motif;
+                    form.appendChild(motifInput);
+                    
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_method';
+                    csrfInput.value = 'POST';
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+            
+            // Fonction pour confirmer la suppression
+            function confirmDelete(uuid, employeNom) {
+                if (confirm('Êtes-vous sûr de vouloir supprimer le congé de "' + employeNom + '" ?\n\nCette action est irréversible.')) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/rh/conges/' + uuid;
+                    
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_method';
+                    csrfInput.value = 'DELETE';
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

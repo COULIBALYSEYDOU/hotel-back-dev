@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails Onboarding</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/onboarding}"><i class="bi bi-box-arrow-in-right"></i> Onboarding</a></li>
+                <li class="breadcrumb-item active">Détails</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1"><i class="bi bi-box-arrow-in-right text-primary"></i> Onboarding</h1>
+                <p class="text-muted mb-0" th:text="${onboarding.employeNom != null ? 'Employé: ' + onboarding.employeNom : ''}">Employé</p>
+            </div>
+            <div>
+                <a th:href="@{/rh/onboarding/{uuid}/edit(uuid=${onboarding.uuid})}" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                <a th:href="@{/rh/onboarding}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Employé:</strong> <span th:text="${onboarding.employeNom}">N/A</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Date début:</strong> 
+                                <span th:text="${onboarding.dateDebut != null ? #temporals.format(onboarding.dateDebut, 'dd/MM/yyyy') : '-'}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Statut:</strong>
+                                <span class="badge bg-secondary" th:if="${onboarding.statutOnboarding == 'NON_DEMARRE'}">Non démarré</span>
+                                <span class="badge bg-warning" th:if="${onboarding.statutOnboarding == 'EN_COURS'}">En cours</span>
+                                <span class="badge bg-success" th:if="${onboarding.statutOnboarding == 'COMPLETE'}">Complété</span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Progression:</strong>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar" role="progressbar" 
+                                         th:style="'width: ' + ${onboarding.progression != null ? onboarding.progression : 0} + '%'"
+                                         th:text="${onboarding.progression != null ? onboarding.progression + '%' : '0%'}">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

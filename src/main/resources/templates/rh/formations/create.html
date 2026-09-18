@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle formation</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .required-field::after {
+                content: " *";
+                color: var(--danger);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh/formations}">
+                        <i class="bi bi-book"></i> Formations
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Nouvelle formation
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-1">
+                            <i class="bi bi-book-plus text-primary"></i> Nouvelle formation
+                        </h1>
+                        <p class="text-muted mb-0">Remplissez le formulaire pour créer une nouvelle formation</p>
+                    </div>
+                    <a th:href="@{/rh/formations}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </a>
+                </div>
+                
+                <!-- Formulaire -->
+                <form th:action="@{/rh/formations}" 
+                      th:object="${formation}" 
+                      method="post" 
+                      novalidate
+                      id="createFormationForm">
+                    
+                    <!-- Informations générales -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="titre" class="form-label required-field">Titre</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           th:classappend="${#fields.hasErrors('titre')} ? 'is-invalid' : ''"
+                                           id="titre" 
+                                           th:field="*{titre}" 
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('titre')}" 
+                                         th:errors="*{titre}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="organisme" class="form-label">Organisme</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="organisme" 
+                                           th:field="*{organisme}">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="typeFormation" class="form-label">Type</label>
+                                    <select class="form-select" id="typeFormation" th:field="*{typeFormation}">
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="INTERNE">Interne</option>
+                                        <option value="EXTERNE">Externe</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="modeFormation" class="form-label">Mode</label>
+                                    <select class="form-select" id="modeFormation" th:field="*{modeFormation}">
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="PRESENTIEL">Présentiel</option>
+                                        <option value="EN_LIGNE">En ligne</option>
+                                        <option value="HYBRIDE">Hybride</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="statutFormation" class="form-label">Statut</label>
+                                    <select class="form-select" id="statutFormation" th:field="*{statutFormation}">
+                                        <option value="PLANIFIEE">Planifiée</option>
+                                        <option value="EN_COURS">En cours</option>
+                                        <option value="TERMINEE">Terminée</option>
+                                        <option value="ANNULEE">Annulée</option>
+                                        <option value="REPORTEE">Reportée</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="dateDebut" class="form-label required-field">Date de début</label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           th:classappend="${#fields.hasErrors('dateDebut')} ? 'is-invalid' : ''"
+                                           id="dateDebut" 
+                                           th:field="*{dateDebut}" 
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('dateDebut')}" 
+                                         th:errors="*{dateDebut}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="dateFin" class="form-label required-field">Date de fin</label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           th:classappend="${#fields.hasErrors('dateFin')} ? 'is-invalid' : ''"
+                                           id="dateFin" 
+                                           th:field="*{dateFin}" 
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('dateFin')}" 
+                                         th:errors="*{dateFin}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="dureeHeures" class="form-label">Durée (heures)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="dureeHeures" 
+                                           th:field="*{dureeHeures}"
+                                           min="0" 
+                                           step="0.5">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="lieu" class="form-label">Lieu</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="lieu" 
+                                           th:field="*{lieu}">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="cout" class="form-label">Coût</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="cout" 
+                                           th:field="*{cout}"
+                                           step="0.01" 
+                                           min="0">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="devise" class="form-label">Devise</label>
+                                    <select class="form-select" id="devise" th:field="*{devise}">
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                        <option value="XAF">XAF</option>
+                                        <option value="XOF">XOF</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombrePlaces" class="form-label">Nombre de places</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="nombrePlaces" 
+                                           th:field="*{nombrePlaces}"
+                                           min="0">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombreParticipants" class="form-label">Nombre de participants</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="nombreParticipants" 
+                                           th:field="*{nombreParticipants}"
+                                           min="0">
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" 
+                                              id="description" 
+                                              th:field="*{description}" 
+                                              rows="4"></textarea>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="objectifs" class="form-label">Objectifs</label>
+                                    <textarea class="form-control" 
+                                              id="objectifs" 
+                                              th:field="*{objectifs}" 
+                                              rows="3"></textarea>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="programme" class="form-label">Programme</label>
+                                    <textarea class="form-control" 
+                                              id="programme" 
+                                              th:field="*{programme}" 
+                                              rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Documents -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-file-earmark"></i> Documents (optionnel)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="documents" class="form-label">Documents (URLs séparées par des virgules)</label>
+                                    <textarea class="form-control" 
+                                              id="documents" 
+                                              th:field="*{documents}" 
+                                              rows="2"></textarea>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="materielPedagogique" class="form-label">Matériel pédagogique (URLs séparées par des virgules)</label>
+                                    <textarea class="form-control" 
+                                              id="materielPedagogique" 
+                                              th:field="*{materielPedagogique}" 
+                                              rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Boutons d'action -->
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/rh/formations}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Créer la formation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            // Validation Bootstrap
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('form[novalidate]')
+                Array.prototype.slice.call(forms).forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+            })()
+            
+            // Validation des dates
+            document.getElementById('dateDebut').addEventListener('change', function() {
+                const dateDebut = new Date(this.value);
+                const dateFin = document.getElementById('dateFin');
+                if (dateFin.value) {
+                    const dateFinValue = new Date(dateFin.value);
+                    if (dateFinValue < dateDebut) {
+                        dateFin.setCustomValidity('La date de fin doit être après la date de début');
+                    } else {
+                        dateFin.setCustomValidity('');
+                    }
+                }
+            });
+            
+            document.getElementById('dateFin').addEventListener('change', function() {
+                const dateDebut = document.getElementById('dateDebut');
+                if (dateDebut.value) {
+                    const dateDebutValue = new Date(dateDebut.value);
+                    const dateFinValue = new Date(this.value);
+                    if (dateFinValue < dateDebutValue) {
+                        this.setCustomValidity('La date de fin doit être après la date de début');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,89 @@
+package projet_hotelier.hotel.module.reporting.compliance.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import projet_hotelier.hotel.module.reporting.compliance.dto.request.CreateRegistreTraitementRequest;
+import projet_hotelier.hotel.module.reporting.compliance.dto.request.UpdateRegistreTraitementRequest;
+import projet_hotelier.hotel.module.reporting.compliance.dto.response.RegistreTraitementResponse;
+import projet_hotelier.hotel.module.reporting.compliance.model.RegistreTraitementModel;
+import projet_hotelier.hotel.shared.dto.AuditDTO;
+import projet_hotelier.hotel.shared.dto.TraceDTO;
+
+import java.util.List;
+
+@Mapper(
+        componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        unmappedTargetPolicy = org.mapstruct.ReportingPolicy.ERROR,
+        builder = @org.mapstruct.Builder(disableBuilder = true)
+)
+public interface RegistreTraitementMapper {
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "uuid", ignore = true)
+    @Mapping(target = "dateMiseAJour", ignore = true)
+    @Mapping(target = "dateCreation", ignore = true)
+    @Mapping(target = "dateModification", ignore = true)
+    @Mapping(target = "creePar", ignore = true)
+    @Mapping(target = "modifiePar", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    @Mapping(target = "actif", ignore = true)
+    @Mapping(target = "supprime", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "organisationId", ignore = true)
+    @Mapping(target = "hotelId", ignore = true)
+    @Mapping(target = "metadataJson", ignore = true)
+    RegistreTraitementModel toEntity(CreateRegistreTraitementRequest request);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "uuid", ignore = true)
+    @Mapping(target = "codeTraitement", ignore = true)
+    @Mapping(target = "dateCreation", ignore = true)
+    @Mapping(target = "dateModification", ignore = true)
+    @Mapping(target = "creePar", ignore = true)
+    @Mapping(target = "modifiePar", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    @Mapping(target = "actif", ignore = true)
+    @Mapping(target = "supprime", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "organisationId", ignore = true)
+    @Mapping(target = "hotelId", ignore = true)
+    @Mapping(target = "metadataJson", ignore = true)
+    void updateEntity(@MappingTarget RegistreTraitementModel entity, UpdateRegistreTraitementRequest request);
+
+    @Mapping(target = "audit", expression = "java(mapAudit(entity))")
+    @Mapping(target = "trace", expression = "java(mapTrace(entity))")
+    RegistreTraitementResponse toResponse(RegistreTraitementModel entity);
+
+    List<RegistreTraitementResponse> toResponseList(List<RegistreTraitementModel> entities);
+
+    default AuditDTO mapAudit(RegistreTraitementModel entity) {
+        if (entity == null) return null;
+        return AuditDTO.builder()
+                .uuid(entity.getUuid())
+                .dateCreation(entity.getDateCreation())
+                .dateModification(entity.getDateModification())
+                .creePar(entity.getCreePar())
+                .modifiePar(entity.getModifiePar())
+                .version(entity.getVersion())
+                .actif(entity.getActif())
+                .build();
+    }
+
+    default TraceDTO mapTrace(RegistreTraitementModel entity) {
+        if (entity == null) return null;
+        return TraceDTO.builder()
+                .traceId(entity.getTraceId())
+                .spanId(entity.getSpanId())
+                .correlationId(entity.getCorrelationId())
+                .requestId(entity.getRequestId())
+                .operationId(entity.getOperationId())
+                .idempotencyKey(entity.getIdempotencyKey())
+                .sourceSystem(entity.getSourceSystem())
+                .sourceIp(entity.getSourceIp())
+                .userAgent(entity.getUserAgent())
+                .build();
+    }
+}

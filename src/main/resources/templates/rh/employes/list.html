@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Employés</title>
+    
+    <th:block layout:fragment="customCss">
+        <style>
+            .table-actions {
+                white-space: nowrap;
+            }
+            
+            .avatar-placeholder {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background-color: var(--primary);
+                color: white;
+                font-weight: bold;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/rh}">
+                        <i class="bi bi-house-door"></i> Accueil
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-people"></i> Employés
+                </li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <!-- Header avec titre et bouton action -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="bi bi-people-fill text-primary"></i> Liste des Employés
+                </h1>
+                <p class="text-muted mb-0" th:if="${employes != null}">
+                    <span th:text="${employes.totalElements}">0</span> employé(s) au total
+                </p>
+            </div>
+            <div>
+                <a th:href="@{/rh/employes/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nouvel employé
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filtres et recherche -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/rh/employes}" method="get" class="row g-3">
+                    <!-- Recherche -->
+                    <div class="col-md-4">
+                        <label for="search" class="form-label small">Rechercher</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="search" 
+                                   name="search" 
+                                   th:value="${param.search}" 
+                                   placeholder="Nom, prénom, matricule, email...">
+                        </div>
+                    </div>
+                    
+                    <!-- Filtre par département -->
+                    <div class="col-md-3">
+                        <label for="departement" class="form-label small">Département</label>
+                        <select class="form-select" id="departement" name="departement">
+                            <option value="">Tous les départements</option>
+                            <option th:each="dept : ${departements}" 
+                                    th:value="${dept}" 
+                                    th:text="${dept}"
+                                    th:selected="${param.departement != null and param.departement == dept}">
+                                Département
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <!-- Filtre par statut -->
+                    <div class="col-md-3">
+                        <label for="statut" class="form-label small">Statut</label>
+                        <select class="form-select" id="statut" name="statut">
+                            <option value="">Tous les statuts</option>
+                            <option value="ACTIF" th:selected="${param.statut == 'ACTIF'}">Actif</option>
+                            <option value="PERIODE_ESSAI" th:selected="${param.statut == 'PERIODE_ESSAI'}">Période d'essai</option>
+                            <option value="EN_CONGE_PROLONGE" th:selected="${param.statut == 'EN_CONGE_PROLONGE'}">En congé prolongé</option>
+                            <option value="SUSPENDU" th:selected="${param.statut == 'SUSPENDU'}">Suspendu</option>
+                            <option value="INACTIF" th:selected="${param.statut == 'INACTIF'}">Inactif</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Boutons -->
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100 me-2">
+                            <i class="bi bi-search"></i> Filtrer
+                        </button>
+                        <a th:href="@{/rh/employes}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tableau responsive -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul"></i> Résultats
+                </h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="exportTable()">
+                        <i class="bi bi-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 60px;">
+                                    <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>
+                                    <a th:href="@{/rh/employes(sort='matricule', order=${currentSort == 'matricule' and currentOrder == 'asc' ? 'desc' : 'asc'}, search=${param.search}, departement=${param.departement}, statut=${param.statut})}" 
+                                       class="text-decoration-none text-dark">
+                                        Matricule
+                                        <i class="bi" 
+                                           th:classappend="${currentSort == 'matricule' ? (currentOrder == 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'}"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a th:href="@{/rh/employes(sort='nom', order=${currentSort == 'nom' and currentOrder == 'asc' ? 'desc' : 'asc'}, search=${param.search}, departement=${param.departement}, statut=${param.statut})}" 
+                                       class="text-decoration-none text-dark">
+                                        Nom complet
+                                        <i class="bi" 
+                                           th:classappend="${currentSort == 'nom' ? (currentOrder == 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'}"></i>
+                                    </a>
+                                </th>
+                                <th>Poste</th>
+                                <th>Département</th>
+                                <th>Email</th>
+                                <th>Téléphone</th>
+                                <th>
+                                    <a th:href="@{/rh/employes(sort='statutEmploye', order=${currentSort == 'statutEmploye' and currentOrder == 'asc' ? 'desc' : 'asc'}, search=${param.search}, departement=${param.departement}, statut=${param.statut})}" 
+                                       class="text-decoration-none text-dark">
+                                        Statut
+                                        <i class="bi" 
+                                           th:classappend="${currentSort == 'statutEmploye' ? (currentOrder == 'asc' ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'}"></i>
+                                    </a>
+                                </th>
+                                <th class="text-end table-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="employe : ${employes.content}">
+                                <td>
+                                    <input type="checkbox" class="form-check-input row-checkbox" 
+                                           th:value="${employe.uuid}">
+                                </td>
+                                <td>
+                                    <strong th:text="${employe.matricule}">EMP001</strong>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-placeholder me-2" 
+                                             th:text="${#strings.substring(employe.nom, 0, 1) + #strings.substring(employe.prenom, 0, 1)}">
+                                            NP
+                                        </div>
+                                        <div>
+                                            <div th:text="${employe.nom + ' ' + employe.prenom}">Nom Prénom</div>
+                                            <small class="text-muted" th:if="${employe.email}" th:text="${employe.email}">email@example.com</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${employe.poste}">Poste</td>
+                                <td>
+                                    <span class="badge bg-secondary" th:text="${employe.departement}">Département</span>
+                                </td>
+                                <td>
+                                    <a th:if="${employe.email}" 
+                                       th:href="'mailto:' + ${employe.email}" 
+                                       th:text="${employe.email}"
+                                       class="text-decoration-none">
+                                        email@example.com
+                                    </a>
+                                    <span th:unless="${employe.email}" class="text-muted">-</span>
+                                </td>
+                                <td th:text="${employe.telephone != null ? employe.telephone : '-'}">-</td>
+                                <td>
+                                    <span class="badge bg-success" 
+                                          th:if="${employe.statutEmploye == 'ACTIF' or (employe.audit != null and employe.audit.actif)}">
+                                        Actif
+                                    </span>
+                                    <span class="badge bg-warning" 
+                                          th:if="${employe.statutEmploye == 'PERIODE_ESSAI'}">
+                                        Période d'essai
+                                    </span>
+                                    <span class="badge bg-info" 
+                                          th:if="${employe.statutEmploye == 'EN_CONGE_PROLONGE'}">
+                                        En congé
+                                    </span>
+                                    <span class="badge bg-danger" 
+                                          th:if="${employe.statutEmploye == 'SUSPENDU'}">
+                                        Suspendu
+                                    </span>
+                                    <span class="badge bg-secondary" 
+                                          th:if="${employe.statutEmploye != null and employe.statutEmploye != 'ACTIF' and employe.statutEmploye != 'PERIODE_ESSAI' and employe.statutEmploye != 'EN_CONGE_PROLONGE' and employe.statutEmploye != 'SUSPENDU' and (employe.audit == null or !employe.audit.actif)}">
+                                        Inactif
+                                    </span>
+                                </td>
+                                <td class="text-end table-actions">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a th:href="@{/rh/employes/{uuid}(uuid=${employe.uuid})}" 
+                                           class="btn btn-outline-primary" 
+                                           title="Voir les détails"
+                                           data-bs-toggle="tooltip">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/rh/employes/{uuid}/edit(uuid=${employe.uuid})}" 
+                                           class="btn btn-outline-warning" 
+                                           title="Modifier"
+                                           data-bs-toggle="tooltip">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button class="btn btn-outline-danger" 
+                                                title="Supprimer"
+                                                data-bs-toggle="tooltip"
+                                                onclick="confirmDelete('${employe.uuid}', '${employe.nom + ' ' + employe.prenom}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Message si vide -->
+                            <tr th:if="${employes == null or #lists.isEmpty(employes.content)}">
+                                <td colspan="9" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                                    <p class="text-muted mt-3 mb-0">Aucun employé trouvé</p>
+                                    <a th:href="@{/rh/employes/new}" class="btn btn-primary mt-3">
+                                        <i class="bi bi-plus-circle"></i> Créer le premier employé
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="card-footer bg-white border-top" th:if="${employes != null and employes.totalPages > 1}">
+                <div th:replace="~{rh/components/pagination :: pagination}"></div>
+            </div>
+        </div>
+        
+        <!-- Actions groupées -->
+        <div class="card mt-4" th:if="${employes != null and !#lists.isEmpty(employes.content)}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted">
+                            <span id="selectedCount">0</span> élément(s) sélectionné(s)
+                        </span>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="exportSelected()" disabled id="btnExportSelected">
+                            <i class="bi bi-download"></i> Exporter sélection
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteSelected()" disabled id="btnDeleteSelected">
+                            <i class="bi bi-trash"></i> Supprimer sélection
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    
+    <th:block layout:fragment="customJs">
+        <script>
+            // Variables pour la pagination
+            const baseUrl = /*[[@{/rh/employes}]]*/ '/rh/employes';
+            const page = /*[[${employes != null ? employes.number : 0}]]*/ 0;
+            const pageSize = /*[[${employes != null ? employes.size : 20}]]*/ 20;
+            const sort = /*[[${currentSort != null ? currentSort : 'id'}]]*/ 'id';
+            const order = /*[[${currentOrder != null ? currentOrder : 'asc'}]]*/ 'asc';
+            
+            // Fonction pour confirmer la suppression
+            function confirmDelete(uuid, nom) {
+                if (confirm('Êtes-vous sûr de vouloir supprimer l\'employé "' + nom + '" ?\n\nCette action est irréversible.')) {
+                    // Créer un formulaire pour la suppression
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/rh/employes/' + uuid;
+                    
+                    // Ajouter le token CSRF si nécessaire
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_method';
+                    csrfInput.value = 'DELETE';
+                    form.appendChild(csrfInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+            
+            // Fonction pour sélectionner/désélectionner tout
+            function toggleSelectAll() {
+                const selectAll = document.getElementById('selectAll');
+                const checkboxes = document.querySelectorAll('.row-checkbox');
+                checkboxes.forEach(cb => {
+                    cb.checked = selectAll.checked;
+                });
+                updateSelectedCount();
+            }
+            
+            // Mettre à jour le compteur de sélection
+            function updateSelectedCount() {
+                const selected = document.querySelectorAll('.row-checkbox:checked');
+                const count = selected.length;
+                document.getElementById('selectedCount').textContent = count;
+                
+                const btnExport = document.getElementById('btnExportSelected');
+                const btnDelete = document.getElementById('btnDeleteSelected');
+                
+                if (count > 0) {
+                    btnExport.disabled = false;
+                    btnDelete.disabled = false;
+                } else {
+                    btnExport.disabled = true;
+                    btnDelete.disabled = true;
+                }
+            }
+            
+            // Écouter les changements sur les checkboxes
+            document.addEventListener('DOMContentLoaded', function() {
+                const checkboxes = document.querySelectorAll('.row-checkbox');
+                checkboxes.forEach(cb => {
+                    cb.addEventListener('change', updateSelectedCount);
+                });
+            });
+            
+            // Exporter la sélection
+            function exportSelected() {
+                const selected = Array.from(document.querySelectorAll('.row-checkbox:checked'))
+                    .map(cb => cb.value);
+                if (selected.length > 0) {
+                    // TODO: Implémenter l'export
+                    alert('Export de ' + selected.length + ' employé(s)');
+                }
+            }
+            
+            // Supprimer la sélection
+            function deleteSelected() {
+                const selected = Array.from(document.querySelectorAll('.row-checkbox:checked'))
+                    .map(cb => cb.value);
+                if (selected.length > 0) {
+                    if (confirm('Êtes-vous sûr de vouloir supprimer ' + selected.length + ' employé(s) ?\n\nCette action est irréversible.')) {
+                        // TODO: Implémenter la suppression groupée
+                        alert('Suppression de ' + selected.length + ' employé(s)');
+                    }
+                }
+            }
+            
+            // Exporter le tableau
+            function exportTable() {
+                // TODO: Implémenter l'export CSV/Excel
+                alert('Export du tableau en cours...');
+            }
+        </script>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{rh/layout/base}"
+      lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Document</title>
+</head>
+<body>
+    <th:block layout:fragment="breadcrumb">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/rh}"><i class="bi bi-house-door"></i> Accueil</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/documents}"><i class="bi bi-file-earmark"></i> Documents</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/rh/documents/{uuid}(uuid=${document.uuid})}">Détails</a></li>
+                <li class="breadcrumb-item active">Modifier</li>
+            </ol>
+        </nav>
+    </th:block>
+    
+    <th:block layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-1"><i class="bi bi-pencil text-primary"></i> Modifier le Document</h1>
+                        <p class="text-muted mb-0" th:text="${document.nom}">Document</p>
+                    </div>
+                    <div>
+                        <a th:href="@{/rh/documents/{uuid}(uuid=${document.uuid})}" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-eye"></i> Voir
+                        </a>
+                        <a th:href="@{/rh/documents}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour
+                        </a>
+                    </div>
+                </div>
+                
+                <form th:action="@{/rh/documents/{uuid}(uuid=${document.uuid})}" th:object="${document}" method="post" novalidate>
+                    <input type="hidden" name="_method" value="PUT" th:if="${_csrf != null}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf != null}">
+                    
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informations Générales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label for="nom" class="form-label">Nom</label>
+                                    <input type="text" class="form-control" id="nom" th:field="*{nom}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="typeDocument" class="form-label">Type</label>
+                                    <select class="form-select" id="typeDocument" th:field="*{typeDocument}">
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="CONTRAT">Contrat</option>
+                                        <option value="CV">CV</option>
+                                        <option value="DIPLOME">Diplôme</option>
+                                        <option value="AUTRE">Autre</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="employeId" class="form-label">Employé</label>
+                                    <select class="form-select" id="employeId" th:field="*{employeId}">
+                                        <option value="">-- Sélectionner --</option>
+                                        <option th:each="emp : ${employes}" th:value="${emp.id}" th:text="${emp.nom + ' ' + emp.prenom}">Employé</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label for="url" class="form-label">URL</label>
+                                    <input type="url" class="form-control" id="url" th:field="*{url}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/rh/documents/{uuid}(uuid=${document.uuid})}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Mettre à jour
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>
