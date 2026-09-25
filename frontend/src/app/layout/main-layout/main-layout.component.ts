@@ -1,40 +1,33 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { TopbarComponent } from '../topbar/topbar.component';
 
 /**
- * Layout principal de l'application
- * Contient la sidebar, la topbar et le contenu principal
+ * Layout principal Étoile OS — structure exacte de la maquette Stitch :
+ * header pleine largeur en haut, puis rangée [sidebar 256px | zone de travail scrollable].
  */
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, SidebarComponent, TopbarComponent],
+  imports: [CommonModule, RouterModule, RouterOutlet, SidebarComponent, TopbarComponent],
   template: `
-    <div class="flex h-screen bg-gray-100">
-      <!-- Sidebar -->
-      <app-sidebar [collapsed]="sidebarCollapsed()" (toggle)="toggleSidebar()" />
-      
-      <!-- Contenu principal -->
-      <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Topbar -->
-        <app-topbar (toggleSidebar)="toggleSidebar()" />
-        
-        <!-- Contenu -->
-        <main class="flex-1 overflow-y-auto p-6">
-          <ng-content></ng-content>
+    <div class="h-screen font-body-md text-on-surface bg-background flex flex-col overflow-hidden antialiased
+                selection:bg-primary-fixed selection:text-on-primary-fixed">
+
+      <!-- TOP SHELL -->
+      <app-topbar />
+
+      <!-- BODY CONTENT WRAPPER -->
+      <div class="flex flex-1 overflow-hidden relative">
+        <app-sidebar />
+
+        <main class="flex-1 flex flex-col overflow-y-auto custom-scrollbar bg-background p-6 lg:p-8 space-y-6">
+          <router-outlet></router-outlet>
         </main>
       </div>
     </div>
   `,
-  styles: []
 })
-export class MainLayoutComponent {
-  readonly sidebarCollapsed = signal<boolean>(false);
-
-  toggleSidebar(): void {
-    this.sidebarCollapsed.update(collapsed => !collapsed);
-  }
-}
+export class MainLayoutComponent {}

@@ -1,18 +1,17 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 
+/**
+ * Composant racine — sert uniquement de point d'entrée pour le router.
+ * Le layout (sidebar + topbar) est appliqué par MainLayoutComponent
+ * en tant que route parente (voir app.routes.ts).
+ */
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MainLayoutComponent],
-  template: `
-    <app-main-layout>
-      <router-outlet></router-outlet>
-    </app-main-layout>
-  `,
-  styles: []
+  imports: [RouterOutlet],
+  template: `<router-outlet></router-outlet>`,
 })
 export class AppComponent {
-  title = 'Plateforme de Gestion Hôtelière';
+  title = 'Étoile OS';
 }
